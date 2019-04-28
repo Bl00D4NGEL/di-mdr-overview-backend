@@ -30,6 +30,9 @@ class MdrParser {
 			self.mdrData = await self.utils.ReadFile(self.mdrFile);
 		}
 		catch (ex) {
+			self.mdrData = JSON.stringify({
+				error: "MDR data not be found"
+			});
 			console.error(ex);
 		}
 		return self.mdrData;
@@ -42,6 +45,9 @@ class MdrParser {
 			house = await this.utils.ReadFile(fileName);
 		}
 		catch (ex) {
+			house = JSON.stringify({
+				error: "House " + houseName + " not found"
+			});
 			console.error(ex);
 		}
 		let parsedHouse = JSON.parse(house);
@@ -55,6 +61,9 @@ class MdrParser {
 			division = await this.utils.ReadFile(fileName);
 		}
 		catch (ex) {
+			division = JSON.stringify({
+				error: "Division " + divisionName + " not found"
+			});
 			console.error(ex);
 		}
 		let parsedDivision = JSON.parse(division);
@@ -157,10 +166,26 @@ class MdrParser {
 
 	SplitMdrDataToFiles(mdrData) {
 		mdrData = this.GetCorrectMdrData(mdrData);
+		this.SaveMdrDataToFile(mdrData);
 		let houses = this.GetHouseDataFromMdrData(mdrData);
 		let divisions = this.GetDivisionDataFromMdrData(mdrData);
 		this.SaveHouseDataToFiles(houses);
 		this.SaveDivisionDataToFiles(divisions);
+	}
+
+	SaveMdrDataToFile(mdrData) {
+		try {
+			let fields = [
+				this.dataDirectory +
+				'/' +
+				'mdr.json'
+			];
+			let fileName = fields.join('');
+                        this.utils.WriteFile(fileName, JSON.stringify(mdrData));
+                }
+                catch (ex) {
+                        console.log(ex);
+                }
 	}
 
 	SaveHouseDataToFiles(houseData) {
