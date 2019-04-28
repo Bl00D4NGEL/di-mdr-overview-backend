@@ -1,0 +1,55 @@
+{
+  "name": "di_overview_backend",
+  "version": "1.0.0",
+  "description": "Backend for the DI MDR overview",
+  "main": "src/index.js",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "chai-fs": "^2.0.0",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "express": "^4.16.4",
+    "js-sha512": "^0.8.0",
+    "lodash": "^4.17.11",
+    "mysql": "^2.16.0",
+    "node-fetch": "^2.3.0",
+    "request": "^2.88.0"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.3.3",
+    "@babel/node": "^7.2.2",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/register": "^7.0.0",
+    "babel-eslint": "^10.0.1",
+    "babel-loader": "^8.0.5",
+    "chai": "^4.2.0",
+    "eslint": "^5.14.1",
+    "eslint-config-strongloop": "^2.1.0",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.18.10",
+    "nyc": "^13.3.0"
+  },
+  "scripts": {
+    "lint": "eslint --fix --ignore-path .gitignore .",
+    "pretest": "eslint --fix --ignore-path .gitignore .",
+    "test-coverage": "nyc --require @babel/register --reporter=html --reporter=text ./node_modules/.bin/mocha --recursive",
+    "test": "nodemon --ext js --watch ./ --exec \"./node_modules/.bin/mocha --recursive --compilers js:@babel/register\" --delay 1",
+    "start": "nodemon --watch ./src --exec babel-node ./src/index.js",
+    "build": "babel src --out-dir ./dist --source-maps",
+    "serve": "node ./dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bl00D4NGEL/binance_scraper.git"
+  },
+  "author": "Dominik Peters",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Bl00D4NGEL/binance_scraper/issues"
+  },
+  "homepage": "https://github.com/Bl00D4NGEL/binance_scraper#readme"
+}
