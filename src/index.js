@@ -71,22 +71,17 @@ async function GetMdr(callback) {
 let mdr = new MdrParser();
 Splitter();
 
+setInterval(function() {
+	Splitter();
+}, config.renew_interval)
+
 async function Splitter() {
-	console.log('Splitting Data');
-	console.log('Loading data..');
 	let mdrData;
 	if (config.load_from_file) {
-		console.log('Loading from file..');
 		mdrData = await mdr.GetMdrFromFile();
-		console.log('Loaded data.');
 	}
 	else {
-		console.log('Loading from web..');
 		mdrData = await mdr.GetMdrFromWeb();
-		console.log('Loaded data.');
-		console.log('Splitting data into files..');
 		mdr.SplitMdrDataToFiles(mdrData);
-		console.log('Splitted data into files.');
 	}
-	console.log('DONE loading data');
 }
