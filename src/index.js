@@ -73,7 +73,7 @@ Splitter();
 
 setInterval(function() {
 	Splitter();
-}, config.renew_interval)
+}, config.renew_interval);
 
 async function Splitter() {
 	let mdrData;
