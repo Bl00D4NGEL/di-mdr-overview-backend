@@ -26,7 +26,7 @@ app.get('/tagDivisionMembers/:divisionName', (req, res) => {
 				output += "Commander(s):<br>";
 				for (let i = 0; i < division.commanders.length; i++) {
 					let commander = division.commanders[i];
-					output += template.replace(/##id##/g, commander.id).replace('##name##', commander.name);
+					output += template.replace(/##id##/g, commander.id).replace(/##name##/g, commander.name);
 				}
 				output += "<br>";
 			}
