@@ -167,14 +167,14 @@ async function GetTagList(req, res) {
 			return;
 		}
 		let output = '';
-		let tagType = req.body.tagType;
+		let roles = req.body.roles;
 		for (let i = 0; i < reqDivisions.length; i++) {
 			let reqDivision = reqDivisions[i];
+			console.log("loading " + reqDivision);
 			await GetDivision(reqDivision, function(data) {
 				try {
 					let division = new Division(data);
-					let divisionTagList = GenerateTagListForDataAndRoles(division, req.body.roles);
-					if (divisionTagList !== '') {
+					let divisionTagList = GenerateTagListForDataAndRoles(division, roles);
 					output += "<div><h1>Division "  + division.name + "</h1>";
 					output += divisionTagList;
 					if(division.teams.length > 0) {
@@ -185,23 +185,20 @@ async function GetTagList(req, res) {
 							}
 							
 							let teamTagList = GenerateTagListForDataAndRoles(team, req.body.roles);
-							if (teamTagList !== '') {
-								output += "<h2>" + team.name + "</h2>";
-								output += teamTagList;
-								if(team.rosters.length > 0) {
-									for (let j = 0; j < team.rosters.length; j++) {
-										let roster = team.rosters[j];
-										let rosterTagList = GenerateTagListForDataAndRoles(roster, req.body.roles);
-										if (rosterTagList !== '') {
-											output += "<h3>" + roster.name + "</h3>";
-											output += rosterTagList;
-										}
+							output += "<h2>" + team.name + "</h2>";
+							output += teamTagList;
+							if(team.rosters.length > 0) {
+								for (let j = 0; j < team.rosters.length; j++) {
+									let roster = team.rosters[j];
+									let rosterTagList = GenerateTagListForDataAndRoles(roster, req.body.roles);
+									if (rosterTagList !== '') {
+										output += "<h3>" + roster.name + "</h3>";
+										output += rosterTagList;
 									}
 								}
 							}
 						}
-					}
-					output += "</div>";
+						output += "</div>";
 					}
 				}
 				catch(ex) {
