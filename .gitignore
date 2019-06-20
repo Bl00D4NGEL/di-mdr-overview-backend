@@ -63,4 +63,4 @@ typings/
 
 # config files
 config.js
-data/
+data/*
