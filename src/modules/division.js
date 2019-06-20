@@ -17,6 +17,8 @@ class Division {
 
         this.commanders = [];
         this.addCommander(data.Commander);
+
+        this.name = data.name;
     }
 
     addVice(viceData) {

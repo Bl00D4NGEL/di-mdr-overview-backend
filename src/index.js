@@ -163,31 +163,46 @@ async function GetTagList(req, res) {
 			typeof reqDivisions !== 'object' ||
 			reqDivisions.length == 0
 		) {
-			res.send("Invalid division data sent");
+			res.send("Invalid divisions sent");
 			return;
 		}
 		let output = '';
+		let tagType = req.body.tagType;
 		for (let i = 0; i < reqDivisions.length; i++) {
 			let reqDivision = reqDivisions[i];
 			await GetDivision(reqDivision, function(data) {
 				try {
 					let division = new Division(data);
-					output += GenerateTagListForDataAndRoles(division, req.body.roles);
+					let divisionTagList = GenerateTagListForDataAndRoles(division, req.body.roles);
+					if (divisionTagList !== '') {
+					output += "<div><h1>Division "  + division.name + "</h1>";
+					output += divisionTagList;
 					if(division.teams.length > 0) {
 						for (let i = 0; i < division.teams.length; i++) {
 							let team = division.teams[i];
-							output += "<h2 style='color: #1a7303'>" + team.name + "</h2>";
-							output += GenerateTagListForDataAndRoles(team, req.body.roles);
-							if(team.rosters.length > 0) {
-								for (let j = 0; j < team.rosters.length; j++) {
-									let roster = team.rosters[j];
-									output += "<h3 style='color: #025a00'>" + roster.name + "</h3>";
-									output += GenerateTagListForDataAndRoles(roster, req.body.roles);
+							if (team.name === 'Unassigned') {
+								continue;
+							}
+							
+							let teamTagList = GenerateTagListForDataAndRoles(team, req.body.roles);
+							if (teamTagList !== '') {
+								output += "<h2>" + team.name + "</h2>";
+								output += teamTagList;
+								if(team.rosters.length > 0) {
+									for (let j = 0; j < team.rosters.length; j++) {
+										let roster = team.rosters[j];
+										let rosterTagList = GenerateTagListForDataAndRoles(roster, req.body.roles);
+										if (rosterTagList !== '') {
+											output += "<h3>" + roster.name + "</h3>";
+											output += rosterTagList;
+										}
+									}
 								}
 							}
 						}
 					}
 					output += "</div>";
+					}
 				}
 				catch(ex) {
 					console.error(ex);
@@ -242,6 +257,7 @@ function GenerateTagListForDataAndRoles(data, roles) {
 	});
 
 	let output = '';
+	
 	let template = '<a href="https://di.community/profile/##id##-##name##/" contenteditable="false" data-ipshover="" data-ipshover-target="https://di.community/profile/##id##-##name##/?do=hovercard" data-mentionid="##id##">@##name##</a>&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203&nbsp';
 	for (let i=0; i < roles.length; i++) {
 		let role = roles[i];
@@ -250,7 +266,7 @@ function GenerateTagListForDataAndRoles(data, roles) {
 			if (data[roleConfig.val] !== undefined) {
 				let vals = data[roleConfig.val];
 				if (vals.length > 0) {
-					output += roleConfig.name + (vals.length > 1 ? 's' : '') + '<br>';
+					output += "<span class='role'>" + roleConfig.name + (vals.length > 1 ? 's' : '') + '</span><br>';
 					for (let j=0; j < vals.length; j++) {
 						let val = vals[j];
 						output += template.replace(/##id##/g, val.id).replace(/##name##/g, val.name);
