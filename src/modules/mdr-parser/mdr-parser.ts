@@ -2,12 +2,22 @@ import Utils from '../utils';
 import fetch from 'node-fetch';
 
 class MdrParser {
+	mdrUrl: string;
+	dataDirectory: string;
+	mdrFile: string;
+	divisionPrefix: string;
+	housePrefix: string;
+	playerPrefix: string;
+	utils: Utils;
+	mdrData: any;
+
 	constructor() {
 		this.mdrUrl = 'https://di.community/mdr?as_data_structure';
 		this.dataDirectory = 'data';
 		this.mdrFile = this.dataDirectory + '/mdr.json';
 		this.divisionPrefix = 'division-';
 		this.housePrefix = 'house-';
+		this.playerPrefix = 'player-';
 		this.utils = new Utils();
 	}
 	async GetMdrFromWeb() {
@@ -19,6 +29,7 @@ class MdrParser {
 			json: true,
 		};
 		let self = this;
+		
 		let response = await fetch(this.mdrUrl, options);
 		self.mdrData = response.json();
 		return self.mdrData;
@@ -209,10 +220,10 @@ class MdrParser {
 	GetFileNameForHouseName(houseName) {
 		let fields = [
 			this.dataDirectory +
-                        '/' +
-                        this.housePrefix +
-                        houseName.toLowerCase() +
-                        '.json',
+			'/' +
+			this.housePrefix +
+			houseName.toLowerCase() +
+			'.json',
 		];
 		return fields.join('');
 	}
@@ -233,10 +244,10 @@ class MdrParser {
 	GetFileNameForDivisionName(divisionName) {
 		let fields = [
 			this.dataDirectory +
-                        '/' +
-                        this.divisionPrefix +
-                        divisionName.toLowerCase() +
-                        '.json',
+			'/' +
+			this.divisionPrefix +
+			divisionName.toLowerCase() +
+			'.json',
 		];
 		return fields.join('');
 	}
