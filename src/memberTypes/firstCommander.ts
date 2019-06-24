@@ -1,8 +1,6 @@
-import IMember from "./imember";
+import Member from "./member";
 
-export default class FirstCommander implements IMember {
-    name: string;
-    id: number;
+export default class FirstCommander extends Member {
     roleShort: string = 'FC';
     roleLong: string = 'First Commander';
 }

@@ -5,6 +5,7 @@ import bodyParser = require('body-parser');
 import Config from './config';
 import Division from './modules/division';
 import * as fs from 'fs';
+import Mdr from './modules/mdr';
 
 // Set up the express app
 const app = express();
@@ -70,6 +71,30 @@ app.get('/get/divisionNames', (req, res) => {
 
 app.post('/get/tagList', GetTagList);
 
+app.get('/testing', (req, res) => {
+	
+	console.log('MDR');
+	let mdr = new Mdr();
+	console.log("Getting from web");
+	mdr.getFromWeb().then((res) => { 
+		console.log("RES", res);
+		res.json()
+	}).then((body) => {
+		console.log("BODY", body);
+		mdr.parse(body)
+	});
+	console.log("sjdfnsdf");//.then(() => { mdr.saveToFile() });
+
+	let parser = new MdrParser();
+	let data = parser.GetMdrFromWeb();
+	console.log(data);
+	/*
+	console.log("Got from web.. saving");
+	await mdr.saveToFile();
+	console.log("Saved");
+	*/
+	res.send("sdfjnsdfnj");
+});
 async function GetTagList(req, res) {
 		console.log("Get taglist");
 		let reqDivisions = req.body.divisions;
@@ -193,13 +218,13 @@ function GenerateTagListForDataAndRoles(data, roles) {
 
 async function GetDivision(divisionName, callback) {
 	let mdr = new MdrParser();
-	let data = await mdr.GetDivisionFromFile(divisionName);
+	let data = {}; //await mdr.GetDivisionFromFile(divisionName);
 	callback(data);
 }
 
 async function GetHouse(houseName, callback) {
 	let mdr = new MdrParser();
-	let data = await mdr.GetHouseFromFile(houseName);
+	let data = {}; //await mdr.GetHouseFromFile(houseName);
 	callback(data);
 }
 
@@ -222,7 +247,7 @@ async function Splitter() {
 	}
 	else {
 		mdrData = await mdr.GetMdrFromWeb();
-		mdr.SplitMdrDataToFiles(mdrData);
+		//mdr.SplitMdrDataToFiles(mdrData);
 	}
 }
 

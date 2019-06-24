@@ -1,8 +1,6 @@
-import IMember from "./imember";
+import Member from "./member";
 
-export default class HouseGeneral implements IMember {
-    name: string;
-    id: number;
+export default class HouseGeneral extends Member {
     roleShort: string = 'HG';
     roleLong: string = 'House General';
 }

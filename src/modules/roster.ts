@@ -7,6 +7,15 @@ interface IRoster {
     subs: Array<Sub>;
     rls: Array<RosterLeader>;
     rosterName: string;
+    count: number;
+    mobileDevicesLinked: number;
+    memberCount: number;
+    initiateCount: number;
+    associateCount: number;
+    wardenCount: number;
+    activeInLastFiveDays: number;
+    isCompliant: boolean;
+
     add(a: any): void;
 }
 
@@ -15,11 +24,22 @@ export default class Roster implements IRoster {
     subs: Array<Sub>;
     rls: Array<RosterLeader>;
     rosterName: string;
+    count: number;
+    mobileDevicesLinked: number;
+    memberCount: number;
+    initiateCount: number;
+    associateCount: number;
+    wardenCount: number;
+    activeInLastFiveDays: number;
+    isCompliant: boolean;
 
-    constructor() {
+    constructor(data?: any) {
         this.members = [];
         this.subs = [];
         this.rls = [];
+        if (data !== undefined) {
+            this.parse(data);
+        }
     }
 
     add(d: any): void {
@@ -35,6 +55,73 @@ export default class Roster implements IRoster {
                 break;
             default:
                 break;
+        }
+    }
+    
+    parse(data: any): void {
+        let dataAsJson;
+        if (typeof data === 'string') {
+            try {
+                dataAsJson = JSON.parse(data);
+            }
+            catch (ex) {
+                return ex;
+            }
+        }
+        else {
+            dataAsJson = data;
+        }
+        for (let key in dataAsJson) {
+            let d = dataAsJson[key];
+            switch (key) {
+                case 'Count':
+                    this.count = d;
+                    break;
+                case 'Mobile-Device-Linked-Count':
+                    this.mobileDevicesLinked = d;
+                    break;
+                case 'Warden-Count':
+                    this.wardenCount = d;
+                    break;
+                case 'Active-In-Last-5-Days-Count':
+                    this.activeInLastFiveDays = d;
+                    break;
+                case 'Member-Count':
+                    this.memberCount = d;
+                    break;
+                case 'Initiate-Count':
+                    this.initiateCount = d;
+                    break;
+                case 'Associate-Count':
+                    this.associateCount = d;
+                    break;
+                case 'name':
+                    this.rosterName = d;
+                    break;
+                case 'Compliant':
+                    this.isCompliant = d;
+                    break;
+                case 'RL':
+                    for (let i = 0; i < d.length; i++) {
+                        let rl = new RosterLeader(d[i]);
+                        this.add(rl);
+                    }
+                    break;
+                case 'Members':
+                    for (let i = 0; i < d.length; i++) {
+                        let mem = new Member(d[i]);
+                        this.add(mem);
+                    }
+                    break;
+                case 'Subs':
+                    for (let i = 0; i < d.length; i++) {
+                        let sub = new Sub(d[i]);
+                        this.add(sub);
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

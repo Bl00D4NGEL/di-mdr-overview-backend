@@ -1,8 +1,6 @@
-import IMember from "./imember";
+import Member from "./member";
 
-export default class RosterLeader implements IMember {
-    name: string;
-    id: number;
+export default class RosterLeader extends Member {
     roleShort: string = 'RL';
     roleLong: string = 'Roster Leader';
 }

@@ -1,14 +1,14 @@
-import Team from "./team";
-import Commander from "../memberTypes/commander";
-import Vice from "../memberTypes/vice";
+import Division from "./division";
+import FirstCommander from "../memberTypes/firstCommander";
+import HouseGeneral from "../memberTypes/houseGeneral";
 import Utils from "./utils";
 
-interface IDivision {
-    teams: Array<Team>;
-    commanders: Array<Commander>;
-    vices: Array<Vice>;
-    divisionName: string;
+interface IHouse {
+    divisions: Array<Division>;
+    firstCommanders: Array<FirstCommander>;
+    houseGenerals: Array<HouseGeneral>;
     houseName: string;
+    sortingNumber: number;
     color: string;
     count: number;
     mobileDevicesLinked: number;
@@ -21,21 +21,17 @@ interface IDivision {
     reputation: number;
     post: number;
     isCompliant: boolean;
-    isCommunityDivision: boolean;
-    isRepDrainEnabled: boolean;
-    isSuperDivision: boolean;
-    isSeedDivision: boolean;
 
     add(a: any): void;
 }
 
-export default class Division implements IDivision {
-    teams: Array<Team>;
-    commanders: Array<Commander>;
-    vices: Array<Vice>;
-    divisionName: string;
+export default class House implements IHouse {
+    divisions: Array<Division>;
+    firstCommanders: Array<FirstCommander>;
+    houseGenerals: Array<HouseGeneral>;
     houseName: string;
     fileName: string;
+    sortingNumber: number;
     color: string;
     count: number;
     mobileDevicesLinked: number;
@@ -48,15 +44,11 @@ export default class Division implements IDivision {
     reputation: number;
     post: number;
     isCompliant: boolean;
-    isCommunityDivision: boolean;
-    isRepDrainEnabled: boolean;
-    isSuperDivision: boolean;
-    isSeedDivision: boolean;
 
     constructor(data?: any) {
-        this.teams = [];
-        this.commanders = [];
-        this.vices = [];
+        this.divisions = [];
+        this.firstCommanders = [];
+        this.houseGenerals = [];
         if (data !== undefined) {
             this.parse(data);
         }
@@ -64,29 +56,30 @@ export default class Division implements IDivision {
 
     add(d: any): void {
         switch(d.constructor.name) {
-            case 'Team':
-                this.teams.push(d);
+            case 'Division':
+                this.divisions.push(d);
                 break;
-            case 'Vice':
-                this.vices.push(d);
+            case 'FirstCommander':
+                this.firstCommanders.push(d);
                 break;
-            case 'Commander':
-                this.commanders.push(d);
+            case 'HouseGeneral':
+                this.houseGenerals.push(d);
                 break;
             default:
                 break;
         }
     }
-
-    async getFromFile(divisionName?: string): Promise<any> {
-        this.fileName = "data/division-";        
-        if (divisionName !== undefined) {
-            this.fileName += divisionName;
+    
+    async getFromFile(houseName?: string): Promise<any> {
+        this.fileName = "data/house-";
+        if (houseName !== undefined) {
+            this.fileName += houseName;
         }
         else {
-            this.fileName += this.divisionName;
+            this.fileName += this.houseName;
         }
         this.fileName += ".json";
+
         let utils = new Utils();
         let data = {};
 		try {
@@ -99,7 +92,7 @@ export default class Division implements IDivision {
     }
 
     async saveToFile(): Promise<any> {
-        let fileName = "data/division-" + this.divisionName + ".json";
+        let fileName = "data/house-" + this.houseName + ".json";
         
         let utils = new Utils();
 		try {
@@ -126,6 +119,9 @@ export default class Division implements IDivision {
         for (let key in dataAsJson) {
             let d = dataAsJson[key];
             switch (key) {
+                case 'sorting_number':
+                    this.sortingNumber = d;
+                    break;
                 case 'color':
                     this.color = d;
                     break;
@@ -160,55 +156,41 @@ export default class Division implements IDivision {
                     this.associateCount = d;
                     break;
                 case 'name':
-                    this.divisionName = d;
-                    if (d.match(/^C/)) {
-                        this.isCommunityDivision = true;
-                    }
-                    else {
-                        this.isCommunityDivision = false;
-                    }
-                    break;
-                case 'House':
                     this.houseName = d;
                     break;
                 case 'Compliant':
                     this.isCompliant = d;
                     break;
-                case 'is_seed':
-                    this.isSeedDivision = d;
-                    break;
-                case 'Super':
-                    this.isSuperDivision = d;
-                    break;
-                case 'rep_drain_enabled':
-                    if (d === 0) {
-                        this.isRepDrainEnabled = true;
-                    }
-                    else {
-                        this.isRepDrainEnabled = false;
-                    }
-                    break;
-                case 'Commander':
+                case 'First Commander':
                     for (let i = 0; i < d.length; i++) {
-                        let dc = new Commander(d[i]);
-                        this.add(dc);
+                        let mem = new FirstCommander(d[i]);
+                        this.add(mem);
                     }
                     break;
-                case 'Vice':
+                case 'House General':
                     for (let i = 0; i < d.length; i++) {
-                        let dv = new Vice(d[i]);
-                        this.add(dv);
+                        let mem = new HouseGeneral(d[i]);
+                        this.add(mem);
                     }
                     break;
-                case 'Teams':
-                    for (let teamName in d) {
-                        let team = new Team(d[teamName]);
-                        this.add(team);
+                case 'Divisions':
+                    for (let divisionName in d) {
+                        let div = new Division(d[divisionName]);
+                        this.add(div);
                     }
                     break;
                 default:
                     break;
             }
         }
+    }
+
+    getDivisionNames(): Array<string> {
+        let names = [];
+        for (let i = 0; i < this.divisions.length; i++) {
+            let div = this.divisions[i];
+            names.push(div.divisionName);
+        }
+        return names;
     }
 }
