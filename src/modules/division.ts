@@ -2,6 +2,11 @@ import Team from "./team";
 import Commander from "../memberTypes/commander";
 import Vice from "../memberTypes/vice";
 import Utils from "./utils";
+import TeamLeader from "../memberTypes/teamLeader";
+import SecondInCharge from "../memberTypes/secondInCharge";
+import RosterLeader from "../memberTypes/rosterLeader";
+import Member from "../memberTypes/member";
+import Sub from "../memberTypes/sub";
 
 interface IDivision {
     teams: Array<Team>;
@@ -210,5 +215,67 @@ export default class Division implements IDivision {
                     break;
             }
         }
+    }
+
+    generateTagListForRoles(roles: Array<string>): string {
+        const roleMap = {
+            "DC": Commander,
+            "DV": Vice,
+            "TL": TeamLeader,
+            "2IC": SecondInCharge,
+            "RL": RosterLeader,
+            "TM": Member,
+            "SUB": Sub
+        };
+        const teamRoles = ["TL", "2IC", "RL", "TM", "SUB"];
+        let sortedRoles = roles.sort(function(a, b) {
+            return roleMap[b].priority - roleMap[a].priority;
+        });
+        
+        let out: string = '<div><h1>Division '  + this.divisionName + '</h1>';
+        let loadedTeam: boolean = false;
+        
+	    for (let i=0; i < sortedRoles.length; i++) {
+            let role: string = sortedRoles[i];
+            
+            if (teamRoles.includes(role) && !loadedTeam) {
+                for (let j = 0; j < this.teams.length; j++) {
+                    let team = this.teams[j];
+                    if (team.teamName === 'Unassigned') {
+                        continue;
+                    }
+                    out += team.generateTagListForRoles(roles);
+                }
+                loadedTeam = true;
+            }
+
+            let vals: Array<Member> = [];
+            switch(role) {
+                case "DC":
+                    vals = this.commanders;
+                    break;
+                case "DV":
+                    vals = this.vices;
+                    break;
+                default:
+                    continue;
+            }
+            
+            if (vals.length > 0) {
+                out += "<span class='role'>" + roleMap[role].roleLong + (vals.length > 1 ? 's (' + vals.length + ')' : '') + '</span><br>';
+                for (let j = 0; j < vals.length; j++) {
+                    let val = vals[j];
+                    out += this.fillTagTemplate(val.id, val.name);
+                }
+                out += "<br>";
+            }
+        }
+        out += "</div>";
+        return out;
+    }
+
+    fillTagTemplate(id: number, name: string): string {
+        let template = '<a href="https://di.community/profile/##id##-##name##/" contenteditable="false" data-ipshover="" data-ipshover-target="https://di.community/profile/##id##-##name##/?do=hovercard" data-mentionid="##id##">@##name##</a>&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203&nbsp';
+        return template.replace(/##id##/g, id.toString()).replace(/##name##/g, name);
     }
 }

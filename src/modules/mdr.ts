@@ -28,7 +28,7 @@ export default class Mdr implements IMdr {
         }
     }
 
-	async getFromWeb(): Promise<any> {
+    async getFromWeb(saveToFile?: boolean): Promise<any> {
 		let options = {
 			headers: {
 				'User-Agent': 'Firefox', // 'Bl00D4NGEL\' User-Agent',
@@ -36,15 +36,25 @@ export default class Mdr implements IMdr {
 			},
 			json: true,
 		};
-		let url = 'https://di.community/mdr?as_data_structure';
-		return await fetch(url, options);
-    }
+        let url = 'https://di.community/mdr?as_data_structure';
+		
+        let response = await fetch(url, options);
+        let self = this;
+        let data = await response.text();
+        if (saveToFile) {
+            let utils = new Utils();
+            utils.WriteFile(this.fileName, data);
+            let splitted = this.splitMdrData(data);
+            this.saveSplittedMdrDataToFiles(splitted);
+        }
+        await self.parse(data);
+	}
     
     async getFromFile(): Promise<any> {
         let utils = new Utils();
         let data = {};
 		try {
-			data = await utils.ReadFile(this.fileName);
+            data = await utils.ReadFile(this.fileName);
             this.parse(data);
 		}
 		catch (ex) {
@@ -53,15 +63,58 @@ export default class Mdr implements IMdr {
 		return;
     }
 
-    async saveToFile(): Promise<any> {
-        let fileName = "data/mdr.json";
-        console.log("Saving...", this);
+    splitMdrData(data: string): {
+        houses: Array<{name: string; value: string}>;
+        divisions: Array<{name: string; value: string}>
+    } {
+        let returnObject = {
+            houses: [],
+            divisions: []
+        };
+        try {
+            let dataObject = JSON.parse(data);
+            for (let houseName in dataObject) {
+                if (houseName === 'Special') {
+                    continue;
+                }
+                let house = dataObject[houseName];
+                let houseObject = {
+                    name: house.name.replace(/House - /i, "").toLowerCase(),
+                    value: JSON.stringify(house)
+                }
+                returnObject.houses.push(houseObject);
+                for (let divisionName in house.Divisions) {
+                    let division = house.Divisions[divisionName];
+                    let divisionObject = {
+                        name: division.name.replace(/di-/i, "").toLowerCase(),
+                        value: JSON.stringify(division)
+                    }
+                    returnObject.divisions.push(divisionObject);
+                }
+            }
+        }
+        catch (ex) {
+            console.log(ex);
+        }
+        return returnObject;
+    }
+
+    saveSplittedMdrDataToFiles(
+        data: {
+            houses: Array<{name: string; value: string}>;
+            divisions: Array<{name: string; value: string}>
+        }
+    ): void {
         let utils = new Utils();
-		try {
-			await utils.WriteFile(fileName, JSON.stringify(this));
-		}
-		catch (ex) {
-			console.error(ex);
+        for (let i = 0; i < data.houses.length; i++) {
+            let houseObject = data.houses[i];
+            let houseFilename = "data/house-" + houseObject.name + ".json";
+            utils.WriteFile(houseFilename, houseObject.value);
+        }
+        for (let i = 0; i < data.divisions.length; i++) {
+            let divisionObject = data.divisions[i];
+            let divisionFilename = "data/division-" + divisionObject.name + ".json";
+            utils.WriteFile(divisionFilename, divisionObject.value);            
         }
     }
 
@@ -78,12 +131,11 @@ export default class Mdr implements IMdr {
         else {
             dataAsJson = data;
         }
-        for (let house in dataAsJson) {
-            if (house === 'Special') {
+        for (let houseName in dataAsJson) {
+            if (houseName === 'Special') {
                 continue; // Unassigned members w/o a division
             }
-            let houseObject = new House(dataAsJson[house]);
-            console.log("Adding", houseObject);
+            let houseObject = new House(dataAsJson[houseName]);
             this.add(houseObject);
         }
     }

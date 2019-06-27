@@ -1,6 +1,7 @@
 import Member from "./member";
 
 export default class Commander extends Member {
-    roleShort: string = 'DC';
-    roleLong: string = 'Commander';
+    static roleShort: string = 'DC';
+    static roleLong: string = 'Commander';
+    static priority: number = 6;
 }

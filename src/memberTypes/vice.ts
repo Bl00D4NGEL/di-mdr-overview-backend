@@ -1,6 +1,7 @@
 import Member from "./member";
 
 export default class Vice extends Member  {
-    roleShort: string = 'DV';
-    roleLong: string = 'Vice';
+    static roleShort: string = 'DV';
+    static roleLong: string = 'Vice';
+    static priority: number = 5;
 }

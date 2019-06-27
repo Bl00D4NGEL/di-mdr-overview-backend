@@ -1,15 +1,17 @@
 interface IMember {
     name: string,
     id: number
-    roleShort: string;
-    roleLong: string;
+    roleShort?: string;
+    roleLong?: string;
+    priority?: number;
 }
 
 export default class Member implements IMember {
     name: string;
     id: number;
-    roleShort: string = 'TM';
-    roleLong: string = 'Member';
+    static roleShort: string = 'TM';
+    static roleLong: string = 'Member';
+    static priority: number = 1;
     
     constructor(data?: any) {
         if (data !== undefined) {

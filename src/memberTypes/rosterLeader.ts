@@ -1,6 +1,7 @@
 import Member from "./member";
 
 export default class RosterLeader extends Member {
-    roleShort: string = 'RL';
-    roleLong: string = 'Roster Leader';
+    static roleShort: string = 'RL';
+    static roleLong: string = 'Roster Leader';
+    static priority: number = 2;
 }

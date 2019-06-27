@@ -1,6 +1,7 @@
 import Member from "./member";
 
 export default class HouseGeneral extends Member {
-    roleShort: string = 'HG';
-    roleLong: string = 'House General';
+    static roleShort: string = 'HG';
+    static roleLong: string = 'House General';
+    static priority: number = 8;
 }

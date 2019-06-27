@@ -1,6 +1,10 @@
 import Member from '../memberTypes/member';
 import Sub from '../memberTypes/sub';
 import RosterLeader from '../memberTypes/rosterLeader';
+import TeamLeader from '../memberTypes/teamLeader';
+import SecondInCharge from '../memberTypes/secondInCharge';
+import Commander from "../memberTypes/commander";
+import Vice from "../memberTypes/vice";
 
 interface IRoster {
     members: Array<Member>;
@@ -123,5 +127,56 @@ export default class Roster implements IRoster {
                     break;
             }
         }
+    }
+
+    generateTagListForRoles(roles: Array<string>): string {
+        const roleMap = {
+            "DC": Commander,
+            "DV": Vice,
+            "TL": TeamLeader,
+            "2IC": SecondInCharge,
+            "RL": RosterLeader,
+            "TM": Member,
+            "SUB": Sub
+        };
+        let sortedRoles = roles.sort(function(a, b) {
+            return roleMap[b].priority - roleMap[a].priority;
+        });
+        let out: string = '<div><h3>'  + this.rosterName + '</h3>';
+        
+	    for (let i=0; i < sortedRoles.length; i++) {
+            let role: string = sortedRoles[i];
+
+            let vals: Array<Member> = [];
+            switch(role) {
+                case "RL":
+                    vals = this.rls;
+                    break;
+                case "TM":
+                    vals = this.members;
+                    break;
+                case "SUB":
+                    vals = this.subs;
+                    break;
+                default:
+                    continue;
+            }
+            
+            if (vals.length > 0) {
+                out += "<span class='role'>" + roleMap[role].roleLong + (vals.length > 1 ? 's (' + vals.length + ')' : '') + '</span><br>';
+                for (let j = 0; j < vals.length; j++) {
+                    let val = vals[j];
+                    out += this.fillTagTemplate(val.id, val.name);
+                }
+                out += "<br>";
+            }
+        }
+        out += "</div>";
+        return out;
+    }
+
+    fillTagTemplate(id: number, name: string): string {
+        let template = '<a href="https://di.community/profile/##id##-##name##/" contenteditable="false" data-ipshover="" data-ipshover-target="https://di.community/profile/##id##-##name##/?do=hovercard" data-mentionid="##id##">@##name##</a>&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203&nbsp';
+        return template.replace(/##id##/g, id.toString()).replace(/##name##/g, name);
     }
 }
