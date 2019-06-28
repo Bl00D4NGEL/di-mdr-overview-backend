@@ -1,17 +1,17 @@
-import Team from "./team";
-import Commander from "../memberTypes/commander";
-import Vice from "../memberTypes/vice";
-import Utils from "./utils";
-import TeamLeader from "../memberTypes/teamLeader";
-import SecondInCharge from "../memberTypes/secondInCharge";
-import RosterLeader from "../memberTypes/rosterLeader";
-import Member from "../memberTypes/member";
-import Sub from "../memberTypes/sub";
+import Team from './team';
+import Commander from './memberTypes/commander';
+import Vice from './memberTypes/vice';
+import Utils from './utils';
+import TeamLeader from './memberTypes/teamLeader';
+import SecondInCharge from './memberTypes/secondInCharge';
+import RosterLeader from './memberTypes/rosterLeader';
+import Member from './memberTypes/member';
+import Sub from './memberTypes/sub';
 
 interface IDivision {
-    teams: Array<Team>;
-    commanders: Array<Commander>;
-    vices: Array<Vice>;
+    teams: Team[];
+    commanders: Commander[];
+    vices: Vice[];
     divisionName: string;
     houseName: string;
     color: string;
@@ -35,9 +35,9 @@ interface IDivision {
 }
 
 export default class Division implements IDivision {
-    teams: Array<Team>;
-    commanders: Array<Commander>;
-    vices: Array<Vice>;
+    teams: Team[];
+    commanders: Commander[];
+    vices: Vice[];
     divisionName: string;
     houseName: string;
     fileName: string;
@@ -68,7 +68,7 @@ export default class Division implements IDivision {
     }
 
     add(d: any): void {
-        switch(d.constructor.name) {
+        switch (d.constructor.name) {
             case 'Team':
                 this.teams.push(d);
                 break;
@@ -84,34 +84,34 @@ export default class Division implements IDivision {
     }
 
     async getFromFile(divisionName?: string): Promise<any> {
-        this.fileName = "data/division-";        
+        this.fileName = 'data/division-';
         if (divisionName !== undefined) {
             this.fileName += divisionName;
         }
         else {
             this.fileName += this.divisionName;
         }
-        this.fileName += ".json";
+        this.fileName += '.json';
         let utils = new Utils();
         let data = {};
-		try {
-			data = await utils.ReadFile(this.fileName);
+        try {
+            data = await utils.ReadFile(this.fileName);
             this.parse(data);
-		}
-		catch (ex) {
-			console.error(ex);
+        }
+        catch (ex) {
+            console.error(ex);
         }
     }
 
     async saveToFile(): Promise<any> {
-        let fileName = "data/division-" + this.divisionName + ".json";
-        
+        let fileName = 'data/division-' + this.divisionName + '.json';
+
         let utils = new Utils();
-		try {
-			await utils.WriteFile(fileName, JSON.stringify(this));
-		}
-		catch (ex) {
-			console.error(ex);
+        try {
+            await utils.WriteFile(fileName, JSON.stringify(this));
+        }
+        catch (ex) {
+            console.error(ex);
         }
     }
 
@@ -121,7 +121,7 @@ export default class Division implements IDivision {
             try {
                 dataAsJson = JSON.parse(data);
             }
-            catch (ex) {
+        catch (ex) {
                 return ex;
             }
         }
@@ -217,27 +217,27 @@ export default class Division implements IDivision {
         }
     }
 
-    generateTagListForRoles(roles: Array<string>): string {
+    generateTagListForRoles(roles: string[]): string {
         const roleMap = {
-            "DC": Commander,
-            "DV": Vice,
-            "TL": TeamLeader,
-            "2IC": SecondInCharge,
-            "RL": RosterLeader,
-            "TM": Member,
-            "SUB": Sub
+            DC: Commander,
+            DV: Vice,
+            TL: TeamLeader,
+            '2IC': SecondInCharge,
+            RL: RosterLeader,
+            TM: Member,
+            SUB: Sub,
         };
-        const teamRoles = ["TL", "2IC", "RL", "TM", "SUB"];
+        const teamRoles = ['TL', '2IC', 'RL', 'TM', 'SUB'];
         let sortedRoles = roles.sort(function(a, b) {
             return roleMap[b].priority - roleMap[a].priority;
         });
-        
-        let out: string = '<div><h1>Division '  + this.divisionName + '</h1>';
-        let loadedTeam: boolean = false;
-        
-	    for (let i=0; i < sortedRoles.length; i++) {
+
+        let out: string = '<div><h1>Division ' + this.divisionName + '</h1>';
+        let loadedTeam = false;
+
+        for (let i = 0; i < sortedRoles.length; i++) {
             let role: string = sortedRoles[i];
-            
+
             if (teamRoles.includes(role) && !loadedTeam) {
                 for (let j = 0; j < this.teams.length; j++) {
                     let team = this.teams[j];
@@ -249,33 +249,38 @@ export default class Division implements IDivision {
                 loadedTeam = true;
             }
 
-            let vals: Array<Member> = [];
-            switch(role) {
-                case "DC":
+            let vals: Member[] = [];
+            switch (role) {
+                case 'DC':
                     vals = this.commanders;
                     break;
-                case "DV":
+                case 'DV':
                     vals = this.vices;
                     break;
                 default:
                     continue;
             }
-            
+
             if (vals.length > 0) {
-                out += "<span class='role'>" + roleMap[role].roleLong + (vals.length > 1 ? 's (' + vals.length + ')' : '') + '</span><br>';
+                out +=
+                    "<span class='role'>" +
+                    roleMap[role].roleLong +
+                    (vals.length > 1 ? 's (' + vals.length.toString() + ')' : '') +
+                    '</span><br>';
                 for (let j = 0; j < vals.length; j++) {
                     let val = vals[j];
                     out += this.fillTagTemplate(val.id, val.name);
                 }
-                out += "<br>";
+                out += '<br>';
             }
         }
-        out += "</div>";
+        out += '</div>';
         return out;
     }
 
     fillTagTemplate(id: number, name: string): string {
-        let template = '<a href="https://di.community/profile/##id##-##name##/" contenteditable="false" data-ipshover="" data-ipshover-target="https://di.community/profile/##id##-##name##/?do=hovercard" data-mentionid="##id##">@##name##</a>&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203&nbsp';
+        let template =
+            '<a href="https://di.community/profile/##id##-##name##/" contenteditable="false" data-ipshover="" data-ipshover-target="https://di.community/profile/##id##-##name##/?do=hovercard" data-mentionid="##id##">@##name##</a>&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203&nbsp';
         return template.replace(/##id##/g, id.toString()).replace(/##name##/g, name);
     }
 }

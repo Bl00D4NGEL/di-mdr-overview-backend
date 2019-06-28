@@ -1,4 +1,4 @@
-import Member from "./member";
+import Member from './member';
 
 export default class FirstCommander extends Member {
     static roleShort: string = 'FC';

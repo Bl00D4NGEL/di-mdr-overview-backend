@@ -1,4 +1,4 @@
-import Member from "./member";
+import Member from './member';
 
 export default class SecondInCharge extends Member {
     static roleShort: string = '2IC';

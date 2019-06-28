@@ -1,4 +1,4 @@
-import Member from "./member";
+import Member from './member';
 
 export default class HouseGeneral extends Member {
     static roleShort: string = 'HG';

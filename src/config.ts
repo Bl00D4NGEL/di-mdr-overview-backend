@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import * as _ from 'lodash';
 
 interface Config {
     configId: string;
@@ -15,11 +15,11 @@ let devConfig: Config = {
     name: 'DI MDR Backend',
     desc: 'MDR Backend for DI',
     loadFromFile: false,
-    renewInterval: 5 * 60 * 1000 // 5 minutes
+    renewInterval: 5 * 60 * 1000, // 5 minutes
 };
 
 let configs: any = {
-    "development": devConfig
+    development: devConfig,
 };
 // Add Prod config is necessary
 

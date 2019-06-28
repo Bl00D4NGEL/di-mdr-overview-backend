@@ -3,13 +3,13 @@ import Utils from './utils';
 import * as fetch from 'node-fetch';
 
 interface IMdr {
-    houses: Array<House>;
+    houses: House[];
     add(a: any): void;
 }
 
 export default class Mdr implements IMdr {
-    houses: Array<House>;
-    fileName: string = "data/mdr.json";
+    houses: House[];
+    fileName: string = 'data/mdr.json';
 
     constructor(data?: any) {
         this.houses = [];
@@ -19,7 +19,7 @@ export default class Mdr implements IMdr {
     }
 
     add(d: any): void {
-        switch(d.constructor.name) {
+        switch (d.constructor.name) {
             case 'House':
                 this.houses.push(d);
                 break;
@@ -29,15 +29,15 @@ export default class Mdr implements IMdr {
     }
 
     async getFromWeb(saveToFile?: boolean): Promise<any> {
-		let options = {
-			headers: {
-				'User-Agent': 'Firefox', // 'Bl00D4NGEL\' User-Agent',
-				'X-Info': 'This request is done by the user Bl00D4NGEL, feel free to contact me on the forums',
-			},
-			json: true,
-		};
+        let options = {
+            headers: {
+                'User-Agent': 'Firefox', // 'Bl00D4NGEL\' User-Agent',
+                'X-Info': 'This request is done by the user Bl00D4NGEL, feel free to contact me on the forums',
+            },
+            json: true,
+        };
         let url = 'https://di.community/mdr?as_data_structure';
-		
+
         let response = await fetch(url, options);
         let self = this;
         let data = await response.text();
@@ -48,28 +48,30 @@ export default class Mdr implements IMdr {
             this.saveSplittedMdrDataToFiles(splitted);
         }
         await self.parse(data);
-	}
-    
+    }
+
     async getFromFile(): Promise<any> {
         let utils = new Utils();
         let data = {};
-		try {
+        try {
             data = await utils.ReadFile(this.fileName);
             this.parse(data);
-		}
-		catch (ex) {
-			console.error(ex);
         }
-		return;
+        catch (ex) {
+            console.error(ex);
+        }
+        return;
     }
 
-    splitMdrData(data: string): {
-        houses: Array<{name: string; value: string}>;
-        divisions: Array<{name: string; value: string}>
+    splitMdrData(
+        data: string,
+    ): {
+        houses: { name: string; value: string }[];
+        divisions: { name: string; value: string }[];
     } {
         let returnObject = {
             houses: [],
-            divisions: []
+            divisions: [],
         };
         try {
             let dataObject = JSON.parse(data);
@@ -79,16 +81,16 @@ export default class Mdr implements IMdr {
                 }
                 let house = dataObject[houseName];
                 let houseObject = {
-                    name: house.name.replace(/House - /i, "").toLowerCase(),
-                    value: JSON.stringify(house)
-                }
+                    name: house.name.replace(/House - /i, '').toLowerCase(),
+                    value: JSON.stringify(house),
+                };
                 returnObject.houses.push(houseObject);
                 for (let divisionName in house.Divisions) {
                     let division = house.Divisions[divisionName];
                     let divisionObject = {
-                        name: division.name.replace(/di-/i, "").toLowerCase(),
-                        value: JSON.stringify(division)
-                    }
+                        name: division.name.replace(/di-/i, '').toLowerCase(),
+                        value: JSON.stringify(division),
+                    };
                     returnObject.divisions.push(divisionObject);
                 }
             }
@@ -99,22 +101,20 @@ export default class Mdr implements IMdr {
         return returnObject;
     }
 
-    saveSplittedMdrDataToFiles(
-        data: {
-            houses: Array<{name: string; value: string}>;
-            divisions: Array<{name: string; value: string}>
-        }
-    ): void {
+    saveSplittedMdrDataToFiles(data: {
+        houses: { name: string; value: string }[];
+        divisions: { name: string; value: string }[];
+    }): void {
         let utils = new Utils();
         for (let i = 0; i < data.houses.length; i++) {
             let houseObject = data.houses[i];
-            let houseFilename = "data/house-" + houseObject.name + ".json";
+            let houseFilename = 'data/house-' + houseObject.name + '.json';
             utils.WriteFile(houseFilename, houseObject.value);
         }
         for (let i = 0; i < data.divisions.length; i++) {
             let divisionObject = data.divisions[i];
-            let divisionFilename = "data/division-" + divisionObject.name + ".json";
-            utils.WriteFile(divisionFilename, divisionObject.value);            
+            let divisionFilename = 'data/division-' + divisionObject.name + '.json';
+            utils.WriteFile(divisionFilename, divisionObject.value);
         }
     }
 

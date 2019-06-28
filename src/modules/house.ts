@@ -1,12 +1,12 @@
-import Division from "./division";
-import FirstCommander from "../memberTypes/firstCommander";
-import HouseGeneral from "../memberTypes/houseGeneral";
-import Utils from "./utils";
+import Division from './division';
+import FirstCommander from './memberTypes/firstCommander';
+import HouseGeneral from './memberTypes/houseGeneral';
+import Utils from './utils';
 
 interface IHouse {
-    divisions: Array<Division>;
-    firstCommanders: Array<FirstCommander>;
-    houseGenerals: Array<HouseGeneral>;
+    divisions: Division[];
+    firstCommanders: FirstCommander[];
+    houseGenerals: HouseGeneral[];
     houseName: string;
     sortingNumber: number;
     color: string;
@@ -26,9 +26,9 @@ interface IHouse {
 }
 
 export default class House implements IHouse {
-    divisions: Array<Division>;
-    firstCommanders: Array<FirstCommander>;
-    houseGenerals: Array<HouseGeneral>;
+    divisions: Division[];
+    firstCommanders: FirstCommander[];
+    houseGenerals: HouseGeneral[];
     houseName: string;
     fileName: string;
     sortingNumber: number;
@@ -55,7 +55,7 @@ export default class House implements IHouse {
     }
 
     add(d: any): void {
-        switch(d.constructor.name) {
+        switch (d.constructor.name) {
             case 'Division':
                 this.divisions.push(d);
                 break;
@@ -69,37 +69,37 @@ export default class House implements IHouse {
                 break;
         }
     }
-    
+
     async getFromFile(houseName?: string): Promise<any> {
-        this.fileName = "data/house-";
+        this.fileName = 'data/house-';
         if (houseName !== undefined) {
             this.fileName += houseName;
         }
         else {
             this.fileName += this.houseName;
         }
-        this.fileName += ".json";
+        this.fileName += '.json';
 
         let utils = new Utils();
         let data = {};
-		try {
-			data = await utils.ReadFile(this.fileName);
+        try {
+            data = await utils.ReadFile(this.fileName);
             this.parse(data);
-		}
-		catch (ex) {
-			console.error(ex);
+        }
+        catch (ex) {
+            console.error(ex);
         }
     }
 
     async saveToFile(): Promise<any> {
-        let fileName = "data/house-" + this.houseName + ".json";
-        
+        let fileName = 'data/house-' + this.houseName + '.json';
+
         let utils = new Utils();
-		try {
-			await utils.WriteFile(fileName, JSON.stringify(this));
-		}
-		catch (ex) {
-			console.error(ex);
+        try {
+            await utils.WriteFile(fileName, JSON.stringify(this));
+        }
+        catch (ex) {
+            console.error(ex);
         }
     }
 
@@ -109,7 +109,7 @@ export default class House implements IHouse {
             try {
                 dataAsJson = JSON.parse(data);
             }
-            catch (ex) {
+        catch (ex) {
                 return ex;
             }
         }
@@ -185,7 +185,7 @@ export default class House implements IHouse {
         }
     }
 
-    getDivisionNames(): Array<string> {
+    getDivisionNames(): string[] {
         let names = [];
         for (let i = 0; i < this.divisions.length; i++) {
             let div = this.divisions[i];
