@@ -8,55 +8,30 @@ import RosterLeader from './memberTypes/rosterLeader';
 import Member from './memberTypes/member';
 import Sub from './memberTypes/sub';
 
-interface IDivision {
-    teams: Team[];
-    commanders: Commander[];
-    vices: Vice[];
-    divisionName: string;
-    houseName: string;
-    color: string;
-    count: number;
-    mobileDevicesLinked: number;
-    memberCount: number;
-    initiateCount: number;
-    associateCount: number;
-    wardenCount: number;
-    officerCount: number;
-    activeInLastFiveDays: number;
-    reputation: number;
-    post: number;
-    isCompliant: boolean;
-    isCommunityDivision: boolean;
-    isRepDrainEnabled: boolean;
-    isSuperDivision: boolean;
-    isSeedDivision: boolean;
-
-    add(a: any): void;
-}
-
-export default class Division implements IDivision {
-    teams: Team[];
-    commanders: Commander[];
-    vices: Vice[];
-    divisionName: string;
-    houseName: string;
-    fileName: string;
-    color: string;
-    count: number;
-    mobileDevicesLinked: number;
-    memberCount: number;
-    initiateCount: number;
-    associateCount: number;
-    wardenCount: number;
-    officerCount: number;
-    activeInLastFiveDays: number;
-    reputation: number;
-    post: number;
-    isCompliant: boolean;
-    isCommunityDivision: boolean;
-    isRepDrainEnabled: boolean;
-    isSuperDivision: boolean;
-    isSeedDivision: boolean;
+export default class Division {
+    teams: Team[] = [];
+    commanders: Commander[] = [];
+    vices: Vice[] = [];
+    divisionName: string = '';
+    houseName: string = '';
+    fileName: string = '';
+    color: string = '';
+    game: string = '';
+    count: number = 0;
+    mobileDevicesLinked: number = 0;
+    memberCount: number = 0;
+    initiateCount: number = 0;
+    associateCount: number = 0;
+    wardenCount: number = 0;
+    officerCount: number = 0;
+    activeInLastFiveDays: number = 0;
+    reputation: number = 0;
+    post: number = 0;
+    isCompliant: boolean = false;
+    isCommunityDivision: boolean = false;
+    isRepDrainEnabled: boolean = false;
+    isSuperDivision: boolean = false;
+    isSeedDivision: boolean = false;
 
     constructor(data?: any) {
         this.teams = [];
@@ -131,6 +106,9 @@ export default class Division implements IDivision {
         for (let key in dataAsJson) {
             let d = dataAsJson[key];
             switch (key) {
+                case 'Game':
+                    this.game = d.name;
+                    break;
                 case 'color':
                     this.color = d;
                     break;
@@ -212,6 +190,12 @@ export default class Division implements IDivision {
                     }
                     break;
                 default:
+                    if (typeof this[key] !== undefined) {
+                        this[key] = d;
+                    }
+                    else {
+                        console.log("???", d, key, this[key]);
+                    }
                     break;
             }
         }
@@ -282,5 +266,23 @@ export default class Division implements IDivision {
         let template =
             '<a href="https://di.community/profile/##id##-##name##/" contenteditable="false" data-ipshover="" data-ipshover-target="https://di.community/profile/##id##-##name##/?do=hovercard" data-mentionid="##id##">@##name##</a>&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203&nbsp';
         return template.replace(/##id##/g, id.toString()).replace(/##name##/g, name);
+    }
+    
+    getMembers(): Array<Member> {
+      let members: Array<Member> = [];
+      let membersAny: Array<any> = [];
+
+      this.teams.map(team => {
+        team = new Team(team);
+        members = members.concat(team.getMembers());
+      });
+
+      membersAny = membersAny.concat(this.commanders);
+      membersAny = membersAny.concat(this.vices);
+      membersAny.map(x => {
+        x = new Member(x);
+        members.push(x);
+      });
+      return members;
     }
 }

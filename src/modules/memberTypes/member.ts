@@ -4,24 +4,25 @@ import Event from '../utils/event';
 import Recruitment from '../utils/recruitment';
 
 export default class Member {
-    name: string;
-    id: number;
+    name: string = '';
+    id: number = 0;
     static roleShort: string = 'TM';
     static roleLong: string = 'Member';
     static priority: number = 1;
-    posts?: number;
-    rep?: number;
+    posts?: number = 0;
+    rep?: number = 0;
     static maxTsInactivity: number = 7;
     static maxForumInactivity: number = 5;
-    groupId?: number;
-    joinedOn?: number;
-    lastActivity?: number;
-    isAway?: boolean;
-    isMobileLinked?: boolean;
-    rank?: string;
-    position?: string;
-    honorPoints?: number;
-    country?: string;
+    groupId?: number = 0;
+    joinedOn?: number = 0;
+    lastActivity?: number = 0;
+    isAway?: boolean = false;
+    isMobileLinked?: boolean = false;
+    rank?: string = '';
+    position?: string = '';
+    honorPoints?: number = 0;
+    country?: string = '';
+    memberRank?: string = '';
 
     postData?: ThisAndLastMonthAndTotal = new ThisAndLastMonthAndTotal();
     eventData?: Event = new Event();
@@ -29,10 +30,10 @@ export default class Member {
     recruitmentData?: Recruitment = new Recruitment();
     tsData?: Teamspeak = new Teamspeak();
 
-    house?: string;
-    roster?: string;
-    team?: string;
-    division?: string;
+    house?: string = '';
+    roster?: string = '';
+    team?: string = '';
+    division?: string = '';
 
     constructor(data?: any) {
         if (data !== undefined) {
@@ -47,6 +48,7 @@ export default class Member {
                 dataAsJson = JSON.parse(data);
             }
             catch (ex) {
+                console.log(ex);
                 return ex;
             }
         }
@@ -70,6 +72,9 @@ export default class Member {
                     break;
                 case 'member_joined_on':
                     this.joinedOn = d;
+                    break;
+                case 'member_rank':
+                    this.memberRank = d;
                     break;
                 case 'last_activity':
                     this.lastActivity = d;
@@ -159,6 +164,12 @@ export default class Member {
                     this.postData.thisMonth = postData.acc_this_month;
                     break;
                 default:
+                    if (typeof this[key] !== undefined) {
+                        this[key] = d;
+                    }
+                    else {
+                        console.log("???", d, key, this[key]);
+                    }
                     break;
             }
         }

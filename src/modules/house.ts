@@ -2,48 +2,27 @@ import Division from './division';
 import FirstCommander from './memberTypes/firstCommander';
 import HouseGeneral from './memberTypes/houseGeneral';
 import Utils from './utils';
+import Member from './memberTypes/member';
 
-interface IHouse {
-    divisions: Division[];
-    firstCommanders: FirstCommander[];
-    houseGenerals: HouseGeneral[];
-    houseName: string;
-    sortingNumber: number;
-    color: string;
-    count: number;
-    mobileDevicesLinked: number;
-    memberCount: number;
-    initiateCount: number;
-    associateCount: number;
-    wardenCount: number;
-    officerCount: number;
-    activeInLastFiveDays: number;
-    reputation: number;
-    post: number;
-    isCompliant: boolean;
-
-    add(a: any): void;
-}
-
-export default class House implements IHouse {
-    divisions: Division[];
-    firstCommanders: FirstCommander[];
-    houseGenerals: HouseGeneral[];
-    houseName: string;
-    fileName: string;
-    sortingNumber: number;
-    color: string;
-    count: number;
-    mobileDevicesLinked: number;
-    memberCount: number;
-    initiateCount: number;
-    associateCount: number;
-    wardenCount: number;
-    officerCount: number;
-    activeInLastFiveDays: number;
-    reputation: number;
-    post: number;
-    isCompliant: boolean;
+export default class House {
+    divisions: Division[] = [];
+    firstCommanders: FirstCommander[] = [];
+    houseGenerals: HouseGeneral[] = [];
+    houseName: string = '';
+    fileName: string = '';
+    sortingNumber: number = 0;
+    color: string = '';
+    count: number = 0;
+    mobileDevicesLinked: number = 0;
+    memberCount: number = 0;
+    initiateCount: number = 0;
+    associateCount: number = 0;
+    wardenCount: number = 0;
+    officerCount: number = 0;
+    activeInLastFiveDays: number = 0;
+    reputation: number = 0;
+    post: number = 0;
+    isCompliant: boolean = false;
 
     constructor(data?: any) {
         this.divisions = [];
@@ -180,6 +159,12 @@ export default class House implements IHouse {
                     }
                     break;
                 default:
+                    if (typeof this[key] !== undefined) {
+                        this[key] = d;
+                    }
+                    else {
+                        console.log("???", d, key, this[key]);
+                    }
                     break;
             }
         }
@@ -192,5 +177,23 @@ export default class House implements IHouse {
             names.push(div.divisionName);
         }
         return names;
+    }
+    
+    getMembers(): Array<Member> {
+      let members: Array<Member> = [];
+      let membersAny: Array<any> = [];
+
+      this.divisions.map(division => {
+        division = new Division(division);
+        members = members.concat(division.getMembers());
+      });
+
+      membersAny = membersAny.concat(this.houseGenerals);
+      membersAny = membersAny.concat(this.firstCommanders);
+      membersAny.map(x => {
+        x = new Member(x);
+        members.push(x);
+      });
+      return members;
     }
 }

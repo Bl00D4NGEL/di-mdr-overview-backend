@@ -6,36 +6,19 @@ import SecondInCharge from './memberTypes/secondInCharge';
 import Commander from './memberTypes/commander';
 import Vice from './memberTypes/vice';
 
-interface IRoster {
-    members: Member[];
-    subs: Sub[];
-    rls: RosterLeader[];
-    rosterName: string;
-    count: number;
-    mobileDevicesLinked: number;
-    memberCount: number;
-    initiateCount: number;
-    associateCount: number;
-    wardenCount: number;
-    activeInLastFiveDays: number;
-    isCompliant: boolean;
-
-    add(a: any): void;
-}
-
-export default class Roster implements IRoster {
-    members: Member[];
-    subs: Sub[];
-    rls: RosterLeader[];
-    rosterName: string;
-    count: number;
-    mobileDevicesLinked: number;
-    memberCount: number;
-    initiateCount: number;
-    associateCount: number;
-    wardenCount: number;
-    activeInLastFiveDays: number;
-    isCompliant: boolean;
+export default class Roster {
+    members: Member[] = [];
+    subs: Sub[] = [];
+    rls: RosterLeader[] = [];
+    rosterName: string = '';
+    count: number = 0;
+    mobileDevicesLinked: number = 0;
+    memberCount: number = 0;
+    initiateCount: number = 0;
+    associateCount: number = 0;
+    wardenCount: number = 0;
+    activeInLastFiveDays: number = 0;
+    isCompliant: boolean = false;
 
     constructor(data?: any) {
         this.members = [];
@@ -124,6 +107,12 @@ export default class Roster implements IRoster {
                     }
                     break;
                 default:
+                    if (typeof this[key] !== undefined) {
+                        this[key] = d;
+                    }
+                    else {
+                        console.log("???", d, key, this[key]);
+                    }
                     break;
             }
         }
@@ -183,5 +172,18 @@ export default class Roster implements IRoster {
         let template =
             '<a href="https://di.community/profile/##id##-##name##/" contenteditable="false" data-ipshover="" data-ipshover-target="https://di.community/profile/##id##-##name##/?do=hovercard" data-mentionid="##id##">@##name##</a>&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203&nbsp';
         return template.replace(/##id##/g, id.toString()).replace(/##name##/g, name);
+    }
+
+    getMembers(): Array<Member> {
+      let membersAny: Array<any> = [];
+      const members: Array<Member> = [];
+      membersAny = membersAny.concat(this.rls);
+      membersAny = membersAny.concat(this.members);
+      membersAny = membersAny.concat(this.subs);
+      membersAny.map(x => {
+        x = new Member(x);
+        members.push(x);
+      });
+      return members;
     }
 }

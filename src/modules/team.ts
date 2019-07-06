@@ -7,45 +7,24 @@ import RosterLeader from './memberTypes/rosterLeader';
 import Member from './memberTypes/member';
 import Sub from './memberTypes/sub';
 
-interface ITeam {
-    rosters: Roster[];
-    tls: TeamLeader[];
-    twoics: SecondInCharge[];
-    teamName: string;
-    reputation: number;
-    post: number;
-    count: number;
-    mobileDevicesLinked: number;
-    memberCount: number;
-    initiateCount: number;
-    associateCount: number;
-    wardenCount: number;
-    officerCount: number;
-    activeInLastFiveDays: number;
-    isCompliant: boolean;
-    isCasualTeam: boolean;
-
-    add(a: any): void;
-}
-
-export default class Team implements ITeam {
-    rosters: Roster[];
-    tls: TeamLeader[];
-    twoics: SecondInCharge[];
-    teamName: string;
-    isCasual: boolean;
-    reputation: number;
-    post: number;
-    count: number;
-    mobileDevicesLinked: number;
-    memberCount: number;
-    initiateCount: number;
-    associateCount: number;
-    wardenCount: number;
-    officerCount: number;
-    activeInLastFiveDays: number;
-    isCompliant: boolean;
-    isCasualTeam: boolean;
+export default class Team {
+    rosters: Roster[] = [];
+    tls: TeamLeader[] = [];
+    twoics: SecondInCharge[] = [];
+    teamName: string = '';
+    isCasual: boolean = false;
+    reputation: number = 0;
+    post: number = 0;
+    count: number = 0;
+    mobileDevicesLinked: number = 0;
+    memberCount: number = 0;
+    initiateCount: number = 0;
+    associateCount: number = 0;
+    wardenCount: number = 0;
+    officerCount: number = 0;
+    activeInLastFiveDays: number = 0;
+    isCompliant: boolean = false;
+    isCasualTeam: boolean = false;
 
     constructor(data?: any) {
         this.rosters = [];
@@ -146,6 +125,12 @@ export default class Team implements ITeam {
                     }
                     break;
                 default:
+                    if (typeof this[key] !== undefined) {
+                        this[key] = d;
+                    }
+                    else {
+                        console.log("???", d, key, this[key]);
+                    }
                     break;
             }
         }
@@ -212,5 +197,23 @@ export default class Team implements ITeam {
         let template =
             '<a href="https://di.community/profile/##id##-##name##/" contenteditable="false" data-ipshover="" data-ipshover-target="https://di.community/profile/##id##-##name##/?do=hovercard" data-mentionid="##id##">@##name##</a>&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203&nbsp';
         return template.replace(/##id##/g, id.toString()).replace(/##name##/g, name);
+    }
+    
+    getMembers(): Array<Member> {
+      let membersAny: Array<any> = [];
+      let members: Array<Member> = [];
+
+      this.rosters.map(roster => {
+        roster = new Roster(roster);
+        members = members.concat(roster.getMembers());
+      });
+
+      membersAny = membersAny.concat(this.tls);
+      membersAny = membersAny.concat(this.twoics);
+      membersAny.map(x => {
+        x = new Member(x);
+        members.push(x);
+      });
+      return members;
     }
 }

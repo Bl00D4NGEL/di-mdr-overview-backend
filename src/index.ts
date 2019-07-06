@@ -6,11 +6,16 @@ import Division from './modules/division';
 import * as fs from 'fs';
 import Mdr from './modules/mdr';
 import House from './modules/house';
+import Member from './modules/memberTypes/member';
+import ProfileParser from './modules/utils/profileParser';
+import * as fetch from 'node-fetch';
+import Utils from './modules/utils';
 
-const mdr = new Mdr();
+let mdr = new Mdr();
+mdr.getFromFile();
 
 async function getTagList(req, res): Promise<any> {
-    console.log('Get taglist');
+    console.log('Get taglist', req.body);
     let reqDivisions = req.body.divisions;
     let roles = req.body.roles;
     if (reqDivisions === undefined || typeof reqDivisions !== 'object' || reqDivisions.length == 0) {
@@ -29,9 +34,13 @@ async function getTagList(req, res): Promise<any> {
     res.send(out);
 }
 
-function splitter(): void {
-    if (!Config.LoadFromFile) {
-        mdr.getFromWeb(true);
+async function splitter(): Promise<any> {
+    if (Config.reloadData) {
+        await mdr.splitter();
+        let newMdr = new Mdr();
+        await newMdr.getFromFile();
+        console.log("Reloaded MDR..", newMdr);
+        mdr = newMdr;
     }
 }
 
@@ -63,10 +72,76 @@ function getHouse(req, res): void {
     }
 }
 
-function getPlayer(req, res): void {
+async function getPlayer(req, res): Promise<any> {
     let params = req.params;
-    console.log('Player', params);
-    res.send(params);
+    let allMembers: Array<Member>;
+    let playerName = req.params.playerName;
+    let playerId: number;
+    if (req.query.id !== undefined) {
+        playerId = parseInt(req.query.id);
+    }
+    else {
+        playerId = getPlayerIdFromFile(playerName);
+    }
+    if (playerId <= 0) {
+        // File doesn't exist, check if id is loadable from mdr members
+        allMembers = mdr.getMembers();
+        for (let i = 0; i < allMembers.length; i++) {
+            const member = allMembers[i];
+            if (member.name.toLowerCase() === playerName.toLowerCase()) {
+                playerId = member.id;
+                console.log("Found ", playerName, playerId);
+                break;
+            }
+        }
+    }
+    if (playerId <= 0) {
+        // Member isn't loadable from mdr members, send error
+        let errorObject = {
+            error: 1,
+            message: "Cannot load player " + playerName
+        };
+        res.send(errorObject);
+        return;
+    }
+    else {
+        let playerData = await loadPlayerDataFromPage(playerName, playerId);
+        res.send(playerData);
+    }
+}
+
+function getPlayerIdFromFile(player: string = ''): number {
+    let dataDirectory = 'data/';
+    
+    var files = fs
+        .readdirSync(dataDirectory)
+        .filter(fn => fn.startsWith('player-'))
+        .filter(fn => fn.endsWith(player.toLowerCase() + '.json'));
+    if (files.length === 1) {
+        let id = files[0].match(/player-(\d+)-.*?\.json/)[1];
+        return parseInt(id);
+    }
+    return 0;
+}
+
+async function loadPlayerDataFromPage(playerName: string, playerId: number) {
+    let profileUrl = 'https://di.community/profile/' + playerId + '-' + playerName.toLowerCase();
+    let options = {
+        headers: {
+            'User-Agent': 'Firefox', // 'Bl00D4NGEL\' User-Agent',
+            'X-Info': 'This request is done by the user Bl00D4NGEL, feel free to contact me on the forums',
+        },
+        json: true,
+    };
+
+    let response = await fetch(profileUrl, options);
+    let data = await response.text();
+    let utils = new Utils();
+    // utils.WriteFile('data/player-' + playerId + "-" + playerName + '.html', data);
+    let profileParser = new ProfileParser();
+    await profileParser.parse(data);
+    utils.WriteFile('data/player-' + playerId + '-' + playerName + '.json', JSON.stringify(profileParser));
+    return JSON.parse(JSON.stringify(profileParser));
 }
 
 function getMdr(req, res): void {
@@ -80,7 +155,7 @@ function getDivisionNames(req, res): void {
     var files = fs
         .readdirSync(dataDirectory)
         .filter(fn => fn.startsWith('division-'))
-        .map(x => x.match(/division-(.*?)\.json/)[1]);
+        .map(x => x.match(/division-(\w+)\.json/)[1]);
     res.send(files);
 }
 

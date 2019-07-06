@@ -5,7 +5,7 @@ interface Config {
     port: number;
     name: string;
     desc: string;
-    loadFromFile: boolean;
+    reloadData: boolean;
     renewInterval: number;
 }
 
@@ -14,7 +14,7 @@ let devConfig: Config = {
     port: 1338,
     name: 'DI MDR Backend',
     desc: 'MDR Backend for DI',
-    loadFromFile: false,
+    reloadData: false,
     renewInterval: 5 * 60 * 1000, // 5 minutes
 };
 

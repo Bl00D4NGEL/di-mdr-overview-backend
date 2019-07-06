@@ -1,6 +1,7 @@
 import House from './house';
 import Utils from './utils';
 import * as fetch from 'node-fetch';
+import Member from './memberTypes/member';
 
 interface IMdr {
     houses: House[];
@@ -29,6 +30,15 @@ export default class Mdr implements IMdr {
     }
 
     async getFromWeb(saveToFile?: boolean): Promise<any> {
+        let data = await this.loadFromWeb();
+        if (saveToFile) {
+            this.splitter(data);
+        }
+        await this.parse(data);
+        return data;
+    }
+
+    async loadFromWeb(): Promise<any> {
         let options = {
             headers: {
                 'User-Agent': 'Firefox', // 'Bl00D4NGEL\' User-Agent',
@@ -39,15 +49,18 @@ export default class Mdr implements IMdr {
         let url = 'https://di.community/mdr?as_data_structure';
 
         let response = await fetch(url, options);
-        let self = this;
         let data = await response.text();
-        if (saveToFile) {
-            let utils = new Utils();
-            utils.WriteFile(this.fileName, data);
-            let splitted = this.splitMdrData(data);
-            this.saveSplittedMdrDataToFiles(splitted);
+        return data;
+    }
+
+    async splitter(data?: string): Promise<any> {
+        if (data === undefined) {
+            data = await this.loadFromWeb();
         }
-        await self.parse(data);
+        let utils = new Utils();
+        utils.WriteFile(this.fileName, data);
+        let splitted = this.splitMdrData(data);
+        this.saveSplittedMdrDataToFiles(splitted);
     }
 
     async getFromFile(): Promise<any> {
@@ -138,5 +151,21 @@ export default class Mdr implements IMdr {
             let houseObject = new House(dataAsJson[houseName]);
             this.add(houseObject);
         }
+    }
+    
+    getMembers(): Array<Member> {
+      let members: Array<Member> = [];
+      let membersAny: Array<any> = [];
+
+      this.houses.map(house => {
+        house = new House(house);
+        members = members.concat(house.getMembers());
+      });
+
+      membersAny.map(x => {
+        x = new Member(x);
+        members.push(x);
+      });
+      return members;
     }
 }
