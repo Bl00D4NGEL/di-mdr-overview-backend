@@ -14,7 +14,7 @@ let devConfig: Config = {
     port: 1338,
     name: 'DI MDR Backend',
     desc: 'MDR Backend for DI',
-    reloadData: false,
+    reloadData: true,
     renewInterval: 5 * 60 * 1000, // 5 minutes
 };
 

@@ -46,7 +46,7 @@ export default class Mdr implements IMdr {
             },
             json: true,
         };
-        let url = 'https://di.community/mdr?as_data_structure';
+        let url = 'https://di.community/mdr/?as_data_structure';
 
         let response = await fetch(url, options);
         let data = await response.text();
