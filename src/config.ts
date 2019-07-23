@@ -11,7 +11,7 @@ interface Config {
 
 let devConfig: Config = {
     configId: 'development',
-    port: 1338,
+    port: 2048,
     name: 'DI MDR Backend',
     desc: 'MDR Backend for DI',
     reloadData: true,

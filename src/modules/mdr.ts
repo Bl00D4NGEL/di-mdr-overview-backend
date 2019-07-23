@@ -1,6 +1,6 @@
 import House from './house';
 import Utils from './utils';
-import * as fetch from 'node-fetch';
+import fetch from 'node-fetch';
 import Member from './memberTypes/member';
 
 interface IMdr {
