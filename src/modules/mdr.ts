@@ -152,20 +152,12 @@ export default class Mdr implements IMdr {
             this.add(houseObject);
         }
     }
-    
+
     getMembers(): Array<Member> {
-      let members: Array<Member> = [];
-      let membersAny: Array<any> = [];
-
-      this.houses.map(house => {
-        house = new House(house);
-        members = members.concat(house.getMembers());
-      });
-
-      membersAny.map(x => {
-        x = new Member(x);
-        members.push(x);
-      });
-      return members;
+        const members: Array<Member> = [];
+        this.houses.forEach(
+            house => house.getMembers().forEach(member => members.push(member))
+        );
+        return members;
     }
 }

@@ -8,8 +8,9 @@ import Mdr from './modules/mdr';
 import House from './modules/house';
 import Member from './modules/memberTypes/member';
 import ProfileParser from './modules/utils/profileParser';
-import * as fetch from 'node-fetch';
+import fetch from 'node-fetch';
 import Utils from './modules/utils';
+import { generateDivisionTagList } from './modules/tagListGenerator';
 
 let mdr = new Mdr();
 mdr.getFromFile();
@@ -18,6 +19,7 @@ async function getTagList(req, res): Promise<any> {
     console.log('Get taglist', req.body);
     let reqDivisions = req.body.divisions;
     let roles = req.body.roles;
+    
     if (reqDivisions === undefined || typeof reqDivisions !== 'object' || reqDivisions.length == 0) {
         res.send('Invalid divisions sent');
         return;
@@ -28,7 +30,7 @@ async function getTagList(req, res): Promise<any> {
             let reqDivision = reqDivisions[i];
             let div = new Division();
             await div.getFromFile(reqDivision);
-            out += div.generateTagListForRoles(roles);
+            out += generateDivisionTagList(div, roles);
         }
     }
     res.send(out);
@@ -51,6 +53,20 @@ function getDivision(req, res): void {
         let div = new Division();
         div.getFromFile(params.divisionName).then(() => {
             res.send(div);
+        });
+    }
+    else {
+        res.send({});
+    }
+}
+
+function getDivisionMembers(req, res): void {
+    let params = req.params;
+    console.log('Division members', params);
+    if (params.divisionName !== undefined) {
+        let div = new Division();
+        div.getFromFile(params.divisionName).then(() => {
+            res.send(div.getMembers());
         });
     }
     else {
@@ -178,6 +194,7 @@ setInterval(splitter, Config.renewInterval);
 
 // Routes
 app.get('/division/:divisionName', getDivision);
+app.get('/divisionMembers/:divisionName', getDivisionMembers);
 app.get('/house/:houseName', getHouse);
 app.get('/player/:playerName', getPlayer);
 app.get('/mdr', getMdr);

@@ -1,16 +1,16 @@
 import TeamLeader from './memberTypes/teamLeader';
 import SecondInCharge from './memberTypes/secondInCharge';
-import Roster from './roster';
-import Commander from './memberTypes/commander';
-import Vice from './memberTypes/vice';
-import RosterLeader from './memberTypes/rosterLeader';
+import Roster, { rosterRoles } from './roster';
 import Member from './memberTypes/member';
-import Sub from './memberTypes/sub';
+
+export const teamRoles: string[] = [TeamLeader.roleShort, SecondInCharge.roleShort].concat(rosterRoles);
 
 export default class Team {
     rosters: Roster[] = [];
     tls: TeamLeader[] = [];
     twoics: SecondInCharge[] = [];
+    onAway: Member[] = [];
+    onProbation: Member[] = [];
     teamName: string = '';
     isCasual: boolean = false;
     reputation: number = 0;
@@ -33,22 +33,27 @@ export default class Team {
         if (data !== undefined) {
             this.parse(data);
         }
+        this.getRoleValues = this.getRoleValues.bind(this);
     }
 
-    add(d: any): void {
-        switch (d.constructor.name) {
-            case 'Roster':
-                this.rosters.push(d);
-                break;
-            case 'TeamLeader':
-                this.tls.push(d);
-                break;
-            case 'SecondInCharge':
-                this.twoics.push(d);
-                break;
-            default:
-                break;
-        }
+    addRoster(roster: Roster): void {
+        this.rosters.push(roster);
+    }
+
+    addTeamLeader(teamLeader: TeamLeader): void {
+        this.tls.push(teamLeader);
+    }
+
+    addSecondInCharge(secondInCharge: SecondInCharge): void {
+        this.twoics.push(secondInCharge);
+    }
+
+    addProbation(member: Member): void {
+        this.onProbation.push(member);
+    }
+
+    addAway(member: Member): void {
+        this.onAway.push(member);
     }
 
     parse(data: any): void {
@@ -108,20 +113,27 @@ export default class Team {
                     break;
                 case 'TL':
                     for (let i = 0; i < d.length; i++) {
-                        let tl = new TeamLeader(d[i]);
-                        this.add(tl);
+                        this.addTeamLeader(new TeamLeader(d[i]));
                     }
                     break;
                 case '2IC':
                     for (let i = 0; i < d.length; i++) {
-                        let secondInCharge = new SecondInCharge(d[i]);
-                        this.add(secondInCharge);
+                        this.addSecondInCharge(new SecondInCharge(d[i]));
                     }
                     break;
                 case 'Rosters':
                     for (let rosterName in d) {
-                        let roster = new Roster(d[rosterName]);
-                        this.add(roster);
+                        this.addRoster(new Roster(d[rosterName]));
+                    }
+                    break;
+                case 'OnAway':
+                    for (let i = 0; i < d.length; i++) {
+                        this.addAway(new Member(d[i]));
+                    }
+                    break;
+                case 'Probation':
+                    for (let i = 0; i < d.length; i++) {
+                        this.addProbation(new Member(d[i]));
                     }
                     break;
                 default:
@@ -136,84 +148,26 @@ export default class Team {
         }
     }
 
-    generateTagListForRoles(roles: string[]): string {
-        const roleMap = {
-            DC: Commander,
-            DV: Vice,
-            TL: TeamLeader,
-            '2IC': SecondInCharge,
-            RL: RosterLeader,
-            TM: Member,
-            SUB: Sub,
-        };
-        const rosterRoles = ['RL', 'TM', 'SUB'];
-        let loadedRoster = false;
-        let sortedRoles = roles.sort(function(a, b) {
-            return roleMap[b].priority - roleMap[a].priority;
-        });
-        let out: string = '<div><h2>' + this.teamName + '</h2>';
-
-        for (let i = 0; i < sortedRoles.length; i++) {
-            let role: string = sortedRoles[i];
-
-            if (rosterRoles.includes(role) && !loadedRoster) {
-                for (let j = 0; j < this.rosters.length; j++) {
-                    let roster = this.rosters[j];
-                    out += roster.generateTagListForRoles(roles);
-                }
-                loadedRoster = true;
-            }
-
-            let vals: Member[] = [];
-            switch (role) {
-                case 'TL':
-                    vals = this.tls;
-                    break;
-                case '2IC':
-                    vals = this.twoics;
-                    break;
-                default:
-                    continue;
-            }
-
-            if (vals.length > 0) {
-                out +=
-                    "<span class='role'>" +
-                    roleMap[role].roleLong +
-                    (vals.length > 1 ? 's (' + vals.length.toString() + ')' : '') +
-                    '</span><br>';
-                for (let j = 0; j < vals.length; j++) {
-                    let val = vals[j];
-                    out += this.fillTagTemplate(val.id, val.name);
-                }
-                out += '<br>';
-            }
+    getRoleValues(role: string) {
+        switch (role) {
+            case 'TL':
+                return this.tls;
+            case '2IC':
+                return this.twoics;
+            default:
+                return [];
         }
-        out += '</div>';
-        return out;
     }
 
-    fillTagTemplate(id: number, name: string): string {
-        let template =
-            '<a href="https://di.community/profile/##id##-##name##/" contenteditable="false" data-ipshover="" data-ipshover-target="https://di.community/profile/##id##-##name##/?do=hovercard" data-mentionid="##id##">@##name##</a>&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203&nbsp';
-        return template.replace(/##id##/g, id.toString()).replace(/##name##/g, name);
-    }
-    
     getMembers(): Array<Member> {
-      let membersAny: Array<any> = [];
-      let members: Array<Member> = [];
+        const members: Array<Member> = [];
 
-      this.rosters.map(roster => {
-        roster = new Roster(roster);
-        members = members.concat(roster.getMembers());
-      });
+        this.onAway.concat(this.onProbation).concat(this.tls).concat(this.twoics).forEach(member => members.push(member));
 
-      membersAny = membersAny.concat(this.tls);
-      membersAny = membersAny.concat(this.twoics);
-      membersAny.map(x => {
-        x = new Member(x);
-        members.push(x);
-      });
-      return members;
+        this.rosters.forEach(
+            roster => roster.getMembers().forEach(member => members.push(member))
+        );
+
+        return members;
     }
 }

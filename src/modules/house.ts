@@ -49,21 +49,24 @@ export default class House {
         }
     }
 
-    async getFromFile(houseName?: string): Promise<any> {
-        this.fileName = 'data/house-';
-        if (houseName !== undefined) {
-            this.fileName += houseName;
-        }
-        else {
-            this.fileName += this.houseName;
-        }
-        this.fileName += '.json';
+    addDivision(division: Division): void {
+        this.divisions.push(division);
+    }
 
-        let utils = new Utils();
-        let data = {};
+    addFirstCommander(firstCommander: FirstCommander): void {
+        this.firstCommanders.push(firstCommander);
+    }
+
+    addHouseGeneral(houseGeneral: HouseGeneral): void {
+        this.houseGenerals.push(houseGeneral);
+    }
+
+    async getFromFile(houseName?: string): Promise<any> {
+        this.fileName = 'data/house-' + (houseName !== undefined ? houseName : this.houseName) + 'json';
+
+        const utils = new Utils();
         try {
-            data = await utils.ReadFile(this.fileName);
-            this.parse(data);
+            this.parse(await utils.ReadFile(this.fileName));
         }
         catch (ex) {
             console.error(ex);
@@ -71,9 +74,9 @@ export default class House {
     }
 
     async saveToFile(): Promise<any> {
-        let fileName = 'data/house-' + this.houseName + '.json';
+        const fileName = 'data/house-' + this.houseName + '.json';
 
-        let utils = new Utils();
+        const utils = new Utils();
         try {
             await utils.WriteFile(fileName, JSON.stringify(this));
         }
@@ -88,7 +91,7 @@ export default class House {
             try {
                 dataAsJson = JSON.parse(data);
             }
-        catch (ex) {
+            catch (ex) {
                 return ex;
             }
         }
@@ -142,20 +145,17 @@ export default class House {
                     break;
                 case 'First Commander':
                     for (let i = 0; i < d.length; i++) {
-                        let mem = new FirstCommander(d[i]);
-                        this.add(mem);
+                        this.addFirstCommander(new FirstCommander(d[i]));
                     }
                     break;
                 case 'House General':
                     for (let i = 0; i < d.length; i++) {
-                        let mem = new HouseGeneral(d[i]);
-                        this.add(mem);
+                        this.addHouseGeneral(new HouseGeneral(d[i]));
                     }
                     break;
                 case 'Divisions':
                     for (let divisionName in d) {
-                        let div = new Division(d[divisionName]);
-                        this.add(div);
+                        this.addDivision(new Division(d[divisionName]));
                     }
                     break;
                 default:
@@ -171,29 +171,19 @@ export default class House {
     }
 
     getDivisionNames(): string[] {
-        let names = [];
-        for (let i = 0; i < this.divisions.length; i++) {
-            let div = this.divisions[i];
-            names.push(div.divisionName);
-        }
-        return names;
+        return this.divisions.map(div => div.divisionName);
     }
-    
+
     getMembers(): Array<Member> {
-      let members: Array<Member> = [];
-      let membersAny: Array<any> = [];
+        const members: Array<Member> = [];
 
-      this.divisions.map(division => {
-        division = new Division(division);
-        members = members.concat(division.getMembers());
-      });
+        this.divisions.map(
+            division => division.getMembers().forEach(member => members.push(member))
+        );
 
-      membersAny = membersAny.concat(this.houseGenerals);
-      membersAny = membersAny.concat(this.firstCommanders);
-      membersAny.map(x => {
-        x = new Member(x);
-        members.push(x);
-      });
-      return members;
+        this.houseGenerals
+            .concat(this.firstCommanders)
+            .forEach(member => members.push(member));
+        return members;
     }
 }

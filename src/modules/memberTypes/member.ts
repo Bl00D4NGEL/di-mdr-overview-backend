@@ -174,4 +174,19 @@ export default class Member {
             }
         }
     }
+
+    getTag(): string {
+        return '<a href="' + this.getProfileLink() +
+            '" contenteditable="false" data-ipshover="" data-ipshover-target="' +
+            this.getProfileLink() + '/?do=hovercard" data-mentionid="' +
+            this.id.toString() + '">@' + this.name + '</a>' + this.getTagFiller();
+    }
+
+    getProfileLink() {
+        return "https://di.community/profile/" + this.id.toString() + '-' + this.name + "/";
+    }
+
+    getTagFiller() {
+        return '&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203&nbsp;';
+    }
 }

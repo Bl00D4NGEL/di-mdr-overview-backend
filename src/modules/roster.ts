@@ -1,10 +1,8 @@
 import Member from './memberTypes/member';
 import Sub from './memberTypes/sub';
 import RosterLeader from './memberTypes/rosterLeader';
-import TeamLeader from './memberTypes/teamLeader';
-import SecondInCharge from './memberTypes/secondInCharge';
-import Commander from './memberTypes/commander';
-import Vice from './memberTypes/vice';
+
+export const rosterRoles: string[] = [RosterLeader.roleShort, Member.roleShort, Sub.roleShort];
 
 export default class Roster {
     members: Member[] = [];
@@ -27,22 +25,19 @@ export default class Roster {
         if (data !== undefined) {
             this.parse(data);
         }
+        this.getRoleValues = this.getRoleValues.bind(this);
     }
 
-    add(d: any): void {
-        switch (d.constructor.name) {
-            case 'Member':
-                this.members.push(d);
-                break;
-            case 'Sub':
-                this.subs.push(d);
-                break;
-            case 'RosterLeader':
-                this.rls.push(d);
-                break;
-            default:
-                break;
-        }
+    addMember(member: Member): void {
+        this.members.push(member);
+    }
+
+    addSub(sub: Sub): void {
+        this.subs.push(sub);
+    }
+
+    addRosterLeader(rosterLeader: RosterLeader): void {
+        this.rls.push(rosterLeader);
     }
 
     parse(data: any): void {
@@ -59,7 +54,7 @@ export default class Roster {
             dataAsJson = data;
         }
         for (let key in dataAsJson) {
-            let d = dataAsJson[key];
+            const d = dataAsJson[key];
             switch (key) {
                 case 'Count':
                     this.count = d;
@@ -90,20 +85,17 @@ export default class Roster {
                     break;
                 case 'RL':
                     for (let i = 0; i < d.length; i++) {
-                        let rl = new RosterLeader(d[i]);
-                        this.add(rl);
+                        this.addRosterLeader(new RosterLeader(d[i]));
                     }
                     break;
                 case 'Members':
                     for (let i = 0; i < d.length; i++) {
-                        let mem = new Member(d[i]);
-                        this.add(mem);
+                        this.addMember(new Member(d[i]));
                     }
                     break;
                 case 'Subs':
                     for (let i = 0; i < d.length; i++) {
-                        let sub = new Sub(d[i]);
-                        this.add(sub);
+                        this.addSub(new Sub(d[i]));
                     }
                     break;
                 default:
@@ -118,72 +110,22 @@ export default class Roster {
         }
     }
 
-    generateTagListForRoles(roles: string[]): string {
-        const roleMap = {
-            DC: Commander,
-            DV: Vice,
-            TL: TeamLeader,
-            '2IC': SecondInCharge,
-            RL: RosterLeader,
-            TM: Member,
-            SUB: Sub,
-        };
-        let sortedRoles = roles.sort(function(a, b) {
-            return roleMap[b].priority - roleMap[a].priority;
-        });
-        let out: string = '<div><h3>' + this.rosterName + '</h3>';
-
-        for (let i = 0; i < sortedRoles.length; i++) {
-            let role: string = sortedRoles[i];
-
-            let vals: Member[] = [];
-            switch (role) {
-                case 'RL':
-                    vals = this.rls;
-                    break;
-                case 'TM':
-                    vals = this.members;
-                    break;
-                case 'SUB':
-                    vals = this.subs;
-                    break;
-                default:
-                    continue;
-            }
-
-            if (vals.length > 0) {
-                out +=
-                    "<span class='role'>" +
-                    roleMap[role].roleLong +
-                    (vals.length > 1 ? 's (' + vals.length.toString() + ')' : '') +
-                    '</span><br>';
-                for (let j = 0; j < vals.length; j++) {
-                    let val = vals[j];
-                    out += this.fillTagTemplate(val.id, val.name);
-                }
-                out += '<br>';
-            }
+    getRoleValues(role: string): Member[] {
+        switch (role) {
+            case 'RL':
+                return this.rls;
+            case 'TM':
+                return this.members;
+            case 'SUB':
+                return this.subs;
+            default:
+                return [];
         }
-        out += '</div>';
-        return out;
-    }
-
-    fillTagTemplate(id: number, name: string): string {
-        let template =
-            '<a href="https://di.community/profile/##id##-##name##/" contenteditable="false" data-ipshover="" data-ipshover-target="https://di.community/profile/##id##-##name##/?do=hovercard" data-mentionid="##id##">@##name##</a>&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203&nbsp';
-        return template.replace(/##id##/g, id.toString()).replace(/##name##/g, name);
     }
 
     getMembers(): Array<Member> {
-      let membersAny: Array<any> = [];
-      const members: Array<Member> = [];
-      membersAny = membersAny.concat(this.rls);
-      membersAny = membersAny.concat(this.members);
-      membersAny = membersAny.concat(this.subs);
-      membersAny.map(x => {
-        x = new Member(x);
-        members.push(x);
-      });
-      return members;
+        return this.rls
+            .concat(this.members)
+            .concat(this.subs);
     }
 }

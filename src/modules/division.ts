@@ -2,11 +2,7 @@ import Team from './team';
 import Commander from './memberTypes/commander';
 import Vice from './memberTypes/vice';
 import Utils from './utils';
-import TeamLeader from './memberTypes/teamLeader';
-import SecondInCharge from './memberTypes/secondInCharge';
-import RosterLeader from './memberTypes/rosterLeader';
 import Member from './memberTypes/member';
-import Sub from './memberTypes/sub';
 
 export default class Division {
     teams: Team[] = [];
@@ -40,6 +36,7 @@ export default class Division {
         if (data !== undefined) {
             this.parse(data);
         }
+        this.getRoleValues = this.getRoleValues.bind(this);
     }
 
     add(d: any): void {
@@ -58,20 +55,23 @@ export default class Division {
         }
     }
 
+    addTeam(team: Team): void {
+        this.teams.push(team);
+    }
+
+    addVice(vice: Vice): void {
+        this.vices.push(vice);
+    }
+
+    addCommander(commander: Commander): void {
+        this.commanders.push(commander);
+    }
+
     async getFromFile(divisionName?: string): Promise<any> {
-        this.fileName = 'data/division-';
-        if (divisionName !== undefined) {
-            this.fileName += divisionName;
-        }
-        else {
-            this.fileName += this.divisionName;
-        }
-        this.fileName += '.json';
-        let utils = new Utils();
-        let data = {};
+        this.fileName = 'data/division-' + (divisionName !== undefined ? divisionName : this.divisionName) + '.json';
+        const utils = new Utils();
         try {
-            data = await utils.ReadFile(this.fileName);
-            this.parse(data);
+            this.parse(await utils.ReadFile(this.fileName));
         }
         catch (ex) {
             console.error(ex);
@@ -79,7 +79,7 @@ export default class Division {
     }
 
     async saveToFile(): Promise<any> {
-        let fileName = 'data/division-' + this.divisionName + '.json';
+        const fileName = 'data/division-' + this.divisionName + '.json';
 
         let utils = new Utils();
         try {
@@ -96,7 +96,7 @@ export default class Division {
             try {
                 dataAsJson = JSON.parse(data);
             }
-        catch (ex) {
+            catch (ex) {
                 return ex;
             }
         }
@@ -164,29 +164,21 @@ export default class Division {
                     this.isSuperDivision = d;
                     break;
                 case 'rep_drain_enabled':
-                    if (d === 0) {
-                        this.isRepDrainEnabled = true;
-                    }
-                    else {
-                        this.isRepDrainEnabled = false;
-                    }
+                    this.isRepDrainEnabled = (d === 0);
                     break;
                 case 'Commander':
                     for (let i = 0; i < d.length; i++) {
-                        let dc = new Commander(d[i]);
-                        this.add(dc);
+                        this.addCommander(new Commander(d[i]));
                     }
                     break;
                 case 'Vice':
                     for (let i = 0; i < d.length; i++) {
-                        let dv = new Vice(d[i]);
-                        this.add(dv);
+                        this.addVice(new Vice(d[i]));
                     }
                     break;
                 case 'Teams':
                     for (let teamName in d) {
-                        let team = new Team(d[teamName]);
-                        this.add(team);
+                        this.addTeam(new Team(d[teamName]));
                     }
                     break;
                 default:
@@ -201,88 +193,27 @@ export default class Division {
         }
     }
 
-    generateTagListForRoles(roles: string[]): string {
-        const roleMap = {
-            DC: Commander,
-            DV: Vice,
-            TL: TeamLeader,
-            '2IC': SecondInCharge,
-            RL: RosterLeader,
-            TM: Member,
-            SUB: Sub,
-        };
-        const teamRoles = ['TL', '2IC', 'RL', 'TM', 'SUB'];
-        let sortedRoles = roles.sort(function(a, b) {
-            return roleMap[b].priority - roleMap[a].priority;
-        });
-
-        let out: string = '<div><h1>Division ' + this.divisionName + '</h1>';
-        let loadedTeam = false;
-
-        for (let i = 0; i < sortedRoles.length; i++) {
-            let role: string = sortedRoles[i];
-
-            if (teamRoles.includes(role) && !loadedTeam) {
-                for (let j = 0; j < this.teams.length; j++) {
-                    let team = this.teams[j];
-                    if (team.teamName === 'Unassigned') {
-                        continue;
-                    }
-                    out += team.generateTagListForRoles(roles);
-                }
-                loadedTeam = true;
-            }
-
-            let vals: Member[] = [];
-            switch (role) {
-                case 'DC':
-                    vals = this.commanders;
-                    break;
-                case 'DV':
-                    vals = this.vices;
-                    break;
-                default:
-                    continue;
-            }
-
-            if (vals.length > 0) {
-                out +=
-                    "<span class='role'>" +
-                    roleMap[role].roleLong +
-                    (vals.length > 1 ? 's (' + vals.length.toString() + ')' : '') +
-                    '</span><br>';
-                for (let j = 0; j < vals.length; j++) {
-                    let val = vals[j];
-                    out += this.fillTagTemplate(val.id, val.name);
-                }
-                out += '<br>';
-            }
+    getRoleValues(role: string) {
+        switch (role) {
+            case 'DC':
+                return this.commanders;
+            case 'DV':
+                return this.vices;
+            default:
+                return [];
         }
-        out += '</div>';
-        return out;
     }
 
-    fillTagTemplate(id: number, name: string): string {
-        let template =
-            '<a href="https://di.community/profile/##id##-##name##/" contenteditable="false" data-ipshover="" data-ipshover-target="https://di.community/profile/##id##-##name##/?do=hovercard" data-mentionid="##id##">@##name##</a>&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203&nbsp';
-        return template.replace(/##id##/g, id.toString()).replace(/##name##/g, name);
-    }
-    
     getMembers(): Array<Member> {
-      let members: Array<Member> = [];
-      let membersAny: Array<any> = [];
+        const members: Array<Member> = [];
 
-      this.teams.map(team => {
-        team = new Team(team);
-        members = members.concat(team.getMembers());
-      });
+        this.commanders
+            .concat(this.vices)
+            .forEach(member => members.push(member));
 
-      membersAny = membersAny.concat(this.commanders);
-      membersAny = membersAny.concat(this.vices);
-      membersAny.map(x => {
-        x = new Member(x);
-        members.push(x);
-      });
-      return members;
+        this.teams.forEach(
+            team => team.getMembers().forEach(member => members.push(member))
+        );
+        return members;
     }
 }
