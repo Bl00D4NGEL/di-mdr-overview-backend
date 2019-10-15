@@ -46,7 +46,7 @@ const generateTeamTagListForRoles = (team: Team, roles: string[]): string => {
 
 const generateRosterTagListForRoles = (roster: Roster, roles: string[]): string => {
     if (roles.filter(role => rosterRoles.includes(role)).length > 0) {
-        return roster.generateTagListForRoles(roles);
+        return generateTagListForMultipleRoles(roles, roster.getRoleValues);
     }
     return '';
 }
