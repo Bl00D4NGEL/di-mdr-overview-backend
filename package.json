@@ -24,8 +24,8 @@
   "devDependencies": {
     "@types/lodash": "^4.14.134",
     "@types/node": "^12.6.8",
-    "@typescript-eslint/eslint-plugin": "^1.11.0",
-    "@typescript-eslint/parser": "^1.11.0",
+    "@typescript-eslint/eslint-plugin": "^2.6.1",
+    "@typescript-eslint/parser": "^2.6.1",
     "eslint": "^5.16.0",
     "nodemon": "^1.18.10",
     "nyc": "^14.1.1",
