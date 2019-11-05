@@ -10,6 +10,8 @@ import ProfileParser from './modules/utils/profileParser';
 import fetch from 'node-fetch';
 import Utils from './modules/utils';
 import { generateDivisionTagList } from './modules/tagListGenerator';
+import https = require('https');
+import fs = require('fs');
 
 let mdr = new Mdr();
 mdr.getFromFile();
@@ -183,6 +185,12 @@ const app = getDefaultExpress();
 splitter();
 setInterval(splitter, Config.renewInterval);
 
+var options = {
+  key: fs.readFileSync('/etc/letsencrypt/archive/mdr.d-peters.com/privkey1.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/archive/mdr.d-peters.com/cert1.pem')
+};
+
+
 // Routes
 app.get('/division/:divisionName', getDivision);
 app.get('/divisionMembers/:divisionName', getDivisionMembers);
@@ -192,4 +200,5 @@ app.get('/mdr', getMdr);
 app.get('/get/divisionNames', getDivisionNames);
 app.post('/get/tagList', getTagList);
 
-export default app;
+https.createServer(options, app).listen(2048);
+export default https;
