@@ -64,3 +64,5 @@ typings/
 # config files
 config.js
 data/*
+
+.idea

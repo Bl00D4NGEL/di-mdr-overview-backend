@@ -10,8 +10,8 @@ import ProfileParser from './modules/utils/profileParser';
 import fetch from 'node-fetch';
 import Utils from './modules/utils';
 import { generateDivisionTagList } from './modules/tagListGenerator';
-import https = require('https');
-import fs = require('fs');
+import https = require('http');
+import serializeMdr from "./modules/serializer/serializeMdr";
 
 let mdr = new Mdr();
 mdr.getFromFile();
@@ -168,6 +168,20 @@ function getDivisionNames(req, res): void {
     res.send(files);
 }
 
+async function test(req, res): Promise<any> {
+    const fileName = 'data/mdr.json';
+    const utils = new Utils();
+    try {
+        const content = await utils.ReadFile(fileName);
+        const serializedMdr = serializeMdr(JSON.parse(content));
+        const out = JSON.stringify(serializedMdr, null, 2);
+        res.send('<pre>' + out + '</pre>');
+    }
+    catch (ex) {
+        console.error(ex);
+    }
+}
+
 function getDefaultExpress(): any {
     const app = express();
     app.use(bodyParser.json());
@@ -185,10 +199,12 @@ const app = getDefaultExpress();
 splitter();
 setInterval(splitter, Config.renewInterval);
 
+/*
 var options = {
   key: fs.readFileSync('/etc/letsencrypt/archive/mdr.d-peters.com/privkey1.pem'),
   cert: fs.readFileSync('/etc/letsencrypt/archive/mdr.d-peters.com/cert1.pem')
 };
+*/
 
 
 // Routes
@@ -199,6 +215,7 @@ app.get('/player/:playerName', getPlayer);
 app.get('/mdr', getMdr);
 app.get('/get/divisionNames', getDivisionNames);
 app.post('/get/tagList', getTagList);
+app.get('/test', test);
 
-https.createServer(options, app).listen(2048);
+https.createServer({}, app).listen(2048);
 export default https;
