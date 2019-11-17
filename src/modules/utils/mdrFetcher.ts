@@ -1,6 +1,6 @@
 import Config from "../../config";
 import fetch from 'node-fetch';
-import Utils from "../utils";
+import Utils from "./utils";
 
 export default function setUpMdrFetcher() {
     fetchMdrFromWeb().then(() => console.log('Loading up MDR', new Date().toISOString()));

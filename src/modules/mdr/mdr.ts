@@ -1,7 +1,7 @@
 import {IMember} from "../member/member";
 import {IHouse} from "../house/house";
 import {IDivision} from "../division/division";
-import Utils from "../utils";
+import Utils from "../utils/utils";
 import serializeMdr from "../serializer/serializeMdr";
 
 
