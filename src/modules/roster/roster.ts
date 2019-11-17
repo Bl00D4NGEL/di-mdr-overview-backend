@@ -7,8 +7,10 @@ export interface IRoster {
     getRosterLeaders(): IMember[];
 
     addMember(member: IMember): void;
+    addAddition(addition: IMember): void;
 
     getMembers(): IMember[];
+    getAdditions(): IMember[];
 
     isCompliant(): boolean;
 
@@ -26,12 +28,21 @@ export interface IRoster {
 export default class Roster implements IRoster {
     private rosterLeaders: IMember[] = [];
     private members: IMember[] = [];
+    private additions: IMember[] = [];
 
     private name: string;
     private ncData: INcData;
 
     addMember(member: IMember): void {
         this.members.push(member);
+    }
+
+    addAddition(addition: IMember): void {
+        this.additions.push(addition);
+    }
+
+    getAdditions(): IMember[] {
+        return this.additions;
     }
 
     getMembers(): IMember[] {

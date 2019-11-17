@@ -32,7 +32,7 @@ function addAdditionsToRoster(additions: {[roleName: string]: diMember[]}, roste
     }
     for (let roleName in additions) {
         if (additions[roleName] !== undefined && additions[roleName].length > 0) {
-            additions[roleName].forEach(addition => roster.addMember(serializeMember(addition)));
+            additions[roleName].forEach(addition => roster.addAddition(serializeMember(addition)));
         }
     }
 }

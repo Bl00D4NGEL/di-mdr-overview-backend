@@ -8,6 +8,11 @@ class Utils {
             });
         });
     }
+
+    ReadFileSync(path: string, opts = 'utf8'): string {
+        return fs.readFileSync(path, opts);
+    }
+
     async WriteFile(path: string, data: any, opts = 'utf8'): Promise<any> {
         return new Promise((resolve, reject) => {
             fs.writeFile(path, data, opts, (err: any) => {

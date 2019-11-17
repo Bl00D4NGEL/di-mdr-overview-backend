@@ -1,32 +1,57 @@
-import * as _ from 'lodash';
+import * as fs from "fs";
+import https = require('https');
+import http = require('http');
 
-interface Config {
+export interface IConfig {
     configId: string;
     port: number;
     name: string;
     desc: string;
     reloadData: boolean;
     renewInterval: number;
+    options: {
+        key: string,
+        cert: string
+    },
+    serverType: any
 }
 
-let devConfig: Config = {
+const devConfig: IConfig = {
     configId: 'development',
     port: 2049,
-    name: 'DI MDR Backend',
-    desc: 'MDR Backend for DI',
+    name: 'DI MDR Backend (DEV)',
+    desc: 'MDR Backend for DI (DEV)',
     reloadData: false,
     renewInterval: 5 * 60 * 1000, // 5 minutes
+    options: {
+        key: '',
+        cert: ''
+    },
+    serverType: http
 };
 
-let configs: any = {
-    development: devConfig,
+let prodConfig: IConfig = {
+    configId: 'development',
+    port: 2049,
+    name: 'DI MDR Backend (PROD)',
+    desc: 'MDR Backend for DI (PROD)',
+    reloadData: true,
+    renewInterval: 5 * 60 * 1000, // 5 minutes
+    options: {
+        key: '',
+        cert: ''
+    },
+    serverType: https
 };
-// Add Prod config is necessary
 
-let environment: string = process.env.NODE_ENV || 'development';
+const environment: string = process.env.NODE_ENV || 'development';
 
-const defaultConfig = configs.development;
-const environmentConfig = configs[environment];
-const finalConfig = _.merge(defaultConfig, environmentConfig);
+let diConfig = devConfig;
 
-export default finalConfig;
+if (environment !== 'development') {
+   diConfig = prodConfig;
+   diConfig.options.key = fs.readFileSync('/etc/letsencrypt/archive/mdr.d-peters.com/privkey1.pem').toString();
+   diConfig.options.cert = fs.readFileSync('/etc/letsencrypt/archive/mdr.d-peters.com/cert1.pem').toString();
+}
+
+export default diConfig;

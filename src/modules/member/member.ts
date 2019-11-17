@@ -2,7 +2,26 @@ import {AWAY, PROBATION} from "./ranks";
 
 export interface IMember {
     setId(id: number): void;
+
     getId(): number;
+
+    setDivision(division: string): void;
+
+    getHouse(): string;
+
+    setHouse(house: string): void;
+
+    getDivision(): string;
+
+    setTeam(team: string): void;
+
+    getTeam(): string;
+
+    setRoster(roster: string): void;
+
+    getRoster(): string;
+
+    getTeamAndRoster(): string;
 
     setName(name: string): void;
 
@@ -30,6 +49,11 @@ export default class Member implements IMember {
     private position;
     private rank;
     private id;
+
+    private house;
+    private division;
+    private team;
+    private roster;
 
     setId(id: number): void {
         this.id = id;
@@ -91,4 +115,39 @@ export default class Member implements IMember {
         return "https://di.community/profile/" + this.getId().toString() + '-' + this.name + "/";
     }
 
+    setHouse(house: string): void {
+        this.house = house;
+    }
+
+    getHouse(): string {
+        return this.house;
+    }
+
+    setDivision(division: string): void {
+        this.division = division;
+    }
+
+    getDivision(): string {
+        return this.division;
+    }
+
+    setTeam(team: string): void {
+        this.team = team;
+    }
+
+    getTeam(): string {
+        return this.team;
+    }
+
+    setRoster(roster: string): void {
+        this.roster = roster;
+    }
+
+    getRoster(): string {
+        return this.roster;
+    }
+
+    getTeamAndRoster(): string {
+        return this.getTeam() + " " + this.getRoster();
+    }
 }
