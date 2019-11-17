@@ -5,7 +5,6 @@ import {Request, Response} from "express";
 
 export default function getTagList(req: Request, res: Response): void {
     const body = req.body;
-    console.log('Get taglist', req.body);
     const requestedDivisions = body.divisions;
     const roles = req.body.roles;
 
