@@ -10,8 +10,8 @@ export interface IConfig {
     reloadData: boolean;
     renewInterval: number;
     options: {
-        key: string,
-        cert: string
+        key: Buffer,
+        cert: Buffer
     },
     serverType: any
 }
@@ -24,8 +24,8 @@ const devConfig: IConfig = {
     reloadData: false,
     renewInterval: 5 * 60 * 1000, // 5 minutes
     options: {
-        key: '',
-        cert: ''
+        key: undefined,
+        cert: undefined
     },
     serverType: http
 };
@@ -38,8 +38,8 @@ let prodConfig: IConfig = {
     reloadData: true,
     renewInterval: 5 * 60 * 1000, // 5 minutes
     options: {
-        key: '',
-        cert: ''
+        key: undefined,
+        cert: undefined
     },
     serverType: https
 };
@@ -50,8 +50,8 @@ let diConfig = devConfig;
 
 if (environment !== 'development') {
    diConfig = prodConfig;
-   diConfig.options.key = fs.readFileSync('/etc/letsencrypt/archive/mdr.d-peters.com/privkey1.pem').toString();
-   diConfig.options.cert = fs.readFileSync('/etc/letsencrypt/archive/mdr.d-peters.com/cert1.pem').toString();
+   diConfig.options.key = fs.readFileSync('/etc/letsencrypt/archive/mdr.d-peters.com/privkey1.pem');
+   diConfig.options.cert = fs.readFileSync('/etc/letsencrypt/archive/mdr.d-peters.com/cert1.pem');
 }
 
 export default diConfig;
