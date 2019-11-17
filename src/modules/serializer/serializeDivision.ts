@@ -9,7 +9,6 @@ import {diTeam} from "../team/diTeam";
 export default function serializeDivision(divisionData: diDivision): IDivision {
     const division = new Division();
 
-    console.log(divisionData);
     division.setGame(divisionData.Game.name);
     division.setName(getDivisionNameFromUrl(divisionData.url));
     division.setIsSuperDivision(divisionData.super || divisionData.Super);
@@ -43,13 +42,13 @@ function addTeamsToDivision(teams: {[teamName:string]: diTeam}, division: IDivis
 }
 
 function addViceToDivision(vices: diMember[], division: IDivision): void {
-    if (vices !== undefined && vices.length > 0) {
+    if (Array.isArray(vices)) {
         vices.forEach(vice => division.addVice(serializeMember(vice)));
     }
 }
 
 function addCommanderToDivision(commanders: diMember[], division: IDivision): void {
-    if (commanders !== undefined && commanders.length > 0) {
+    if (Array.isArray(commanders)) {
         commanders.forEach(commander => division.addCommander(serializeMember(commander)));
     }
 }

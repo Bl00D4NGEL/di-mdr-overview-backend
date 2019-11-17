@@ -71,7 +71,7 @@ export default class Division implements IDivision {
     }
 
     getMembers(): IMember[] {
-        const members = [];
+        const members = this.commanders.concat(this.vices);
         this.getTeams().forEach(team => team.getMembers().forEach(member => members.push(member)));
         return members;
     }

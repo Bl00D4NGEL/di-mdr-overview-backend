@@ -71,7 +71,10 @@ export default class Team implements ITeam {
     }
 
     getMembers(): IMember[] {
-        const members = [];
+        const members = this.teamLeaders
+            .concat(this.secondInCharges)
+            .concat(this.onAways)
+            .concat(this.onProbations);
         this.getRosters().forEach(roster => roster.getMembers().forEach(member => members.push(member)));
         return members;
     }

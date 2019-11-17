@@ -23,7 +23,7 @@ function setNcDataForRoster(rosterData: diRoster, roster: IRoster): void {
 }
 
 function addMembersToRoster(members: diMember[], roster: IRoster): void {
-    if (members !== undefined && members.length > 0) {
+    if (Array.isArray(members)) {
         members.forEach(member => roster.addMember(serializeMember(member)));
     }
 }
@@ -40,7 +40,7 @@ function addAdditionsToRoster(additions: {[roleName: string]: diMember[]}, roste
 }
 
 function addRosterLeaderToRoster(rosterLeaders: diMember[], roster: IRoster): void {
-    if (rosterLeaders !== undefined && rosterLeaders.length > 0) {
+    if (Array.isArray(rosterLeaders)) {
         rosterLeaders.forEach(rl => roster.addRosterLeader(serializeMember(rl)));
     }
 }

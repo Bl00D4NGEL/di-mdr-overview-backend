@@ -30,13 +30,13 @@ function addDivisionsToHouse(divisions: {[divisionName:string]: diDivision}, hou
 }
 
 function addHouseGeneralToHouse(houseGenerals: diMember[], house: IHouse): void {
-    if (houseGenerals !== undefined && houseGenerals.length > 0) {
+    if (Array.isArray(houseGenerals)) {
         houseGenerals.forEach(hg => house.addHouseGeneral(serializeMember(hg)));
     }
 }
 
 function addFirstCommanderToHouse(firstCommanders: diMember[], house: IHouse): void {
-    if (firstCommanders !== undefined && firstCommanders.length > 0) {
+    if (Array.isArray(firstCommanders)) {
         firstCommanders.forEach(fc => house.addFirstCommander(serializeMember(fc)));
     }
 }

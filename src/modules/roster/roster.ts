@@ -35,7 +35,7 @@ export default class Roster implements IRoster {
     }
 
     getMembers(): IMember[] {
-        return this.members;
+        return this.members.concat(this.rosterLeaders);
     }
 
     addRosterLeader(rosterLeader: IMember): void {

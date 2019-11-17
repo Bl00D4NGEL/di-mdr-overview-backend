@@ -34,25 +34,25 @@ function addRostersToTeam(rosters: {[rosterName:string]: diRoster}, team: ITeam)
 }
 
 function addOnProbationsToTeam(onProbations: diMember[], team: ITeam): void {
-    if (onProbations !== undefined && onProbations.length > 0) {
+    if (Array.isArray(onProbations)) {
         onProbations.forEach(onProbation => team.addOnProbation(serializeMember(onProbation)));
     }
 }
 
 function addOnAwaysToTeam(onAways: diMember[], team: ITeam): void {
-    if (onAways !== undefined && onAways.length > 0) {
+    if (Array.isArray(onAways)) {
         onAways.forEach(onAway => team.addOnAway(serializeMember(onAway)));
     }
 }
 
 function addTeamLeaderToTeam(teamLeaderData, team: ITeam): void {
-    if (teamLeaderData !== undefined && teamLeaderData.length > 0) {
+    if (Array.isArray(teamLeaderData)) {
         teamLeaderData.forEach(tl => team.addTeamLeader(serializeMember(tl)));
     }
 }
 
 function addSecondInChargeToTeam(secondInChargeData, team: ITeam): void {
-    if (secondInChargeData !== undefined && secondInChargeData.length > 0) {
+    if (Array.isArray(secondInChargeData)) {
         secondInChargeData.forEach(secondInCharge => team.addSecondInCharge(serializeMember(secondInCharge)));
     }
 }

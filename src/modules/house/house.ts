@@ -58,7 +58,7 @@ export default class House implements IHouse{
     }
 
     getMembers(): IMember[] {
-        const members = [];
+        const members = this.houseGenerals.concat(this.firstCommanders);
         this.getDivisions().forEach(division => division.getMembers().forEach(member => members.push(member)));
         return members;
     }
