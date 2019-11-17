@@ -1,4 +1,4 @@
-import Config from "../../config";
+import Config from "../config";
 import getDivision from "../routeModules/getDivision";
 import getHouse from "../routeModules/getHouse";
 import getMdr from "../routeModules/getMdr";

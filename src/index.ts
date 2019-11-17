@@ -1,6 +1,6 @@
 import configureExpress from "./modules/utils/configureExpress";
 import setUpMdrFetcher from "./modules/utils/mdrFetcher";
-import diConfig from './config';
+import diConfig from './modules/config';
 
 const app = configureExpress();
 if (diConfig.reloadData) {

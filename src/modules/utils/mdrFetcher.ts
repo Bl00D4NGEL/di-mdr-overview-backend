@@ -1,4 +1,4 @@
-import Config from "../../config";
+import Config from "../config";
 import fetch from 'node-fetch';
 import Utils from "./utils";
 
