@@ -1,24 +1,34 @@
 import Division, {IDivision} from "../division/division";
 import serializeTeam from "./serializeTeam";
-import serializeMember from "./serializeMember";
-import {diMember} from "../member/diMembers";
-import serializeNcData from "./serializeNcData";
 import {diDivision} from "../division/diDivision";
-import {diTeam} from "../team/diTeam";
+import addMembersWithCallback from "./helpers/addMembersWithCallback";
+import addObjectWithCallback from "./helpers/addObjectWithCallback";
+import setNcDataForObject from "./helpers/setNcDataForObject";
 
 export default function serializeDivision(divisionData: diDivision): IDivision {
     const division = new Division();
+    bindFunctions(division);
+    setData(division, divisionData);
+    return division;
+}
 
+function bindFunctions(division: IDivision): void {
+    division.setNcData = division.setNcData.bind(division);
+    division.addTeam = division.addTeam.bind(division);
+    division.addCommander = division.addCommander.bind(division);
+    division.addVice = division.addVice.bind(division);
+}
+
+function setData(division: IDivision, divisionData: diDivision): void {
     division.setGame(divisionData.Game.name);
     division.setName(getDivisionNameFromUrl(divisionData.url));
     division.setIsSuperDivision(divisionData.super || divisionData.Super);
     division.setIsSeedDivision(divisionData.is_seed === 1);
 
-    setNcDataForDivision(divisionData, division);
-    addTeamsToDivision(divisionData.Teams, division);
-    addViceToDivision(divisionData.Vice, division);
-    addCommanderToDivision(divisionData.Commander, division);
-    return division;
+    setNcDataForObject(divisionData, division.setNcData);
+    addObjectWithCallback(divisionData.Teams, division.addTeam, serializeTeam);
+    addMembersWithCallback(divisionData.Commander, division.addCommander);
+    addMembersWithCallback(divisionData.Vice, division.addVice);
 }
 
 function getDivisionNameFromUrl(url: string): string {
@@ -27,28 +37,4 @@ function getDivisionNameFromUrl(url: string): string {
         return '';
     }
     return division[1];
-}
-
-function setNcDataForDivision(divisionData: diDivision, division: IDivision): void {
-    if (divisionData.NCSince !== undefined) {
-        division.setNcData(serializeNcData(divisionData));
-    }
-}
-
-function addTeamsToDivision(teams: {[teamName:string]: diTeam}, division: IDivision): void {
-    for (let teamName in teams) {
-        division.addTeam(serializeTeam(teams[teamName]));
-    }
-}
-
-function addViceToDivision(vices: diMember[], division: IDivision): void {
-    if (Array.isArray(vices)) {
-        vices.forEach(vice => division.addVice(serializeMember(vice)));
-    }
-}
-
-function addCommanderToDivision(commanders: diMember[], division: IDivision): void {
-    if (Array.isArray(commanders)) {
-        commanders.forEach(commander => division.addCommander(serializeMember(commander)));
-    }
 }

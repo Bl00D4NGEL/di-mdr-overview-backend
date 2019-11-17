@@ -30,7 +30,6 @@ export default class Member implements IMember {
     private position;
     private rank;
     private id;
-    private tagFiller: string = '&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203&nbsp;';
 
     setId(id: number): void {
         this.id = id;
@@ -81,10 +80,11 @@ export default class Member implements IMember {
     }
 
     getTag(): string {
+        const tagFiller: string = '&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203&nbsp;';
         return '<a href="' + this.getProfileLink() +
             '" contenteditable="false" data-ipshover="" data-ipshover-target="' +
             this.getProfileLink() + '/?do=hovercard" data-mentionid="' +
-            this.getId().toString() + '">@' + this.name + '</a>' + this.tagFiller;
+            this.getId().toString() + '">@' + this.name + '</a>' + tagFiller;
     }
 
     private getProfileLink(): string {

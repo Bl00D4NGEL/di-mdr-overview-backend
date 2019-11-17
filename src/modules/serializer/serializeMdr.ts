@@ -1,12 +1,12 @@
 import Mdr from "../mdr/mdr";
-import {ALL_NAMES, SPECIAL} from "../house/names";
+import {HOUSE_NAMES, SPECIAL} from "../house/names";
 import serializeHouse from "./serializeHouse";
 import {diMdr} from "../mdr/diMdr";
 
 export default function serializeMdr(mdrData: diMdr) {
     const mdr = new Mdr();
 
-    ALL_NAMES.forEach(houseName => {
+    HOUSE_NAMES.forEach(houseName => {
         if (mdrData[houseName] !== undefined) {
             if (shouldHouseBeIgnored(houseName)) {
                 return;

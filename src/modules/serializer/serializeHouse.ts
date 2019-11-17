@@ -1,42 +1,28 @@
 import House, {IHouse} from "../house/house";
 import serializeDivision from "./serializeDivision";
-import serializeMember from "./serializeMember";
-import {diMember} from "../member/diMembers";
-import serializeNcData from "./serializeNcData";
 import {diHouse} from "../house/diHouse";
-import {diDivision} from "../division/diDivision";
+import setNcDataForObject from "./helpers/setNcDataForObject";
+import addObjectWithCallback from "./helpers/addObjectWithCallback";
+import addMembersWithCallback from "./helpers/addMembersWithCallback";
 
 export default function serializeHouse(houseData: diHouse): IHouse {
     const house = new House();
-    house.setHouseName(houseData.name);
-
-    setNcDataForHouse(houseData, house);
-    addDivisionsToHouse(houseData.Divisions, house);
-    addHouseGeneralToHouse(houseData["House General"], house);
-    addFirstCommanderToHouse(houseData['First Commander'], house);
+    bindFunctions(house);
+    setData(houseData, house);
     return house;
 };
 
-function setNcDataForHouse(houseData: diHouse, house) {
-    if (houseData.NCSince !== undefined) {
-        house.setNcData(serializeNcData(houseData))
-    }
+function bindFunctions(house: IHouse): void {
+    house.setNcData = house.setNcData.bind(house);
+    house.addDivision = house.addDivision.bind(house);
+    house.addFirstCommander = house.addFirstCommander.bind(house);
+    house.addHouseGeneral = house.addHouseGeneral.bind(house);
 }
 
-function addDivisionsToHouse(divisions: {[divisionName:string]: diDivision}, house: IHouse): void {
-    for (let divisionName in divisions) {
-        house.addDivision(serializeDivision(divisions[divisionName]));
-    }
-}
-
-function addHouseGeneralToHouse(houseGenerals: diMember[], house: IHouse): void {
-    if (Array.isArray(houseGenerals)) {
-        houseGenerals.forEach(hg => house.addHouseGeneral(serializeMember(hg)));
-    }
-}
-
-function addFirstCommanderToHouse(firstCommanders: diMember[], house: IHouse): void {
-    if (Array.isArray(firstCommanders)) {
-        firstCommanders.forEach(fc => house.addFirstCommander(serializeMember(fc)));
-    }
+function setData(houseData: diHouse, house: IHouse): void {
+    house.setHouseName(houseData.name);
+    setNcDataForObject(houseData, house.setNcData);
+    addObjectWithCallback(houseData.Divisions, house.addDivision, serializeDivision);
+    addMembersWithCallback(houseData["House General"], house.addHouseGeneral);
+    addMembersWithCallback(houseData["First Commander"], house.addFirstCommander);
 }

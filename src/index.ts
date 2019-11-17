@@ -12,10 +12,6 @@ import Utils from './modules/utils';
 import { generateDivisionTagList } from './modules/tagListGenerator';
 import https = require('http');
 import serializeMdr from "./modules/serializer/serializeMdr";
-import tagListGenerator from "./modules/tagListGenerator/tagListGenerator";
-import serializeHouse from "./modules/serializer/serializeHouse";
-import {IHouse} from "./modules/house/house";
-import {POSITIONS} from "./modules/member/positions";
 
 let mdr = new Mdr();
 mdr.getFromFile();
@@ -177,11 +173,11 @@ async function test(req, res): Promise<any> {
     const utils = new Utils();
     try {
         const content = await utils.ReadFile(fileName);
-        // const serializedMdr = serializeMdr(JSON.parse(content));
-        const serializedHouse = serializeHouse(JSON.parse(await utils.ReadFile('data/house-javelin.json')));
+        const serializedMdr = serializeMdr(JSON.parse(content));
+        // const serializedHouse = serializeHouse(JSON.parse(await utils.ReadFile('data/house-javelin.json')));
         // const out = JSON.stringify(serializedMdr, null, 2);
-        // res.send('<pre>' + JSON.stringify(serializedMdr.getMembers(), null, 2) + '</pre>');
-        res.send('<pre>' + tagListGenerator(serializedHouse.getMembers(), POSITIONS) + '</pre>');
+        res.send('<pre>' + JSON.stringify(serializedMdr, null, 2) + '</pre>');
+        // res.send('<pre>' + tagListGenerator(serializedHouse.getMembers(), POSITIONS) + '</pre>');
     }
     catch (ex) {
         console.error(ex);
