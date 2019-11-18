@@ -4,6 +4,7 @@ import getHouse from "../routeModules/getHouse";
 import getMdr from "../routeModules/getMdr";
 import getDivisionNames from "../routeModules/getDivisionNames";
 import getTagList from "../routeModules/getTagList";
+import getRoleNames from "../routeModules/getRoleNames";
 import express = require('express');
 import cors = require('cors');
 import bodyParser = require('body-parser');
@@ -26,5 +27,6 @@ function addRoutes(app) {
     app.get('/house/:houseName', getHouse);
     app.get('/mdr', getMdr);
     app.get('/get/divisionNames', getDivisionNames);
+    app.get('/get/roleNames', getRoleNames);
     app.post('/get/tagList', getTagList);
 }
