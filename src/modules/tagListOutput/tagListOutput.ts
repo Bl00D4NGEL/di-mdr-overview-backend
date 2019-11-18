@@ -1,5 +1,5 @@
-import {IMember} from "../member/member";
+import {IMemberCollection} from "../member/memberCollection";
 
 export interface ITagListOutput {
-    generateOutput(members: IMember[], description: string): string;
+    generate(members: IMemberCollection): string;
 }

@@ -1,20 +1,31 @@
 import {IMdr, loadMdrFromFile} from "../mdr/mdr";
-import tagListGenerator from "../tagListGenerator/tagListGenerator";
-import TagListOutputWeb from "../tagListOutput/tagListOutputWeb";
 import {Request, Response} from "express";
+import TagListOutputWeb from "../tagListOutput/tagListOutputWeb";
+import positionGrouper from "../member/positionGrouper";
 
 export default function getTagList(req: Request, res: Response): void {
     const body = req.body;
     const requestedDivisions = body.divisions;
     const roles = req.body.roles;
 
-    if (!Array.isArray(requestedDivisions) || !Array.isArray(roles)) {
-        res.send('Invalid divisions or roles sent');
+    if (!Array.isArray(requestedDivisions)) {
+        console.log(requestedDivisions);
+        res.send('Invalid divisions sent');
+        return;
+    }
+    if (!Array.isArray(roles)) {
+        res.send('Invalid roles sent');
         return;
     }
 
     const mdr: IMdr = loadMdrFromFile();
-    const toLoadDivisions = mdr.getDivisions().filter(division => requestedDivisions.includes(division.getName().toLowerCase()));
+    const toLoadDivisions = mdr
+        .getDivisions()
+        .filter(
+            division => requestedDivisions
+                .map(div => div.toLowerCase())
+                .includes(division.getName().toLowerCase())
+        );
     if (toLoadDivisions.length === 0) {
         res.send('Requested divisions do not exist');
         return;
@@ -26,5 +37,6 @@ export default function getTagList(req: Request, res: Response): void {
         res.send('Requested divisions do not have members to tag');
         return;
     }
-    res.send(tagListGenerator(toLoadMembers, roles, new TagListOutputWeb()));
+    const output = new TagListOutputWeb();
+    res.send(output.generate(positionGrouper(roles, toLoadMembers)));
 }
