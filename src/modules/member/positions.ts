@@ -20,18 +20,6 @@ export const POSITIONS = [
     COACH
 ];
 
-export const POSITION_LONG_NAMES = {
-    [HOUSE_GENERAL]: 'House General',
-    [FIRST_COMMANDER]: 'First Commander',
-    [COMMANDER]: 'Commander',
-    [VICE]: 'Vice',
-    [TEAM_LEADER]: 'Team Leader',
-    [SECOND_IN_CHARGE]: 'Second in Charge',
-    [ROSTER_LEADER]: 'Roster Leader',
-    [MEMBER]: 'Member',
-    [COACH]: 'Coach'
-};
-
 export const PRIORITIES = {
     [HOUSE_GENERAL]: 1,
     [FIRST_COMMANDER]: 2,

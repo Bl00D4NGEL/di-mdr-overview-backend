@@ -10,6 +10,8 @@ export interface IMdr {
 
     getHouses(): IHouse[];
 
+    getHouseNames(): string[];
+
     getDivisions(): IDivision[];
 
     getDivisionNames(): string[];
@@ -26,6 +28,10 @@ export default class Mdr implements IMdr {
 
     getHouses(): IHouse[] {
         return this.houses;
+    }
+
+    getHouseNames(): string[] {
+        return this.getHouses().map(house => house.getHouseName());
     }
 
     getDivisions(): IDivision[] {

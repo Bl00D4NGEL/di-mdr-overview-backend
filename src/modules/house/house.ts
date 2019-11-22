@@ -16,6 +16,7 @@ export interface IHouse {
 
     setHouseName(houseName: string): void;
     getHouseName(): string;
+    getHouseNameShort(): string
 
     isCompliant(): boolean;
 
@@ -69,6 +70,10 @@ export default class House implements IHouse{
 
     getHouseName(): string {
         return this.houseName;
+    }
+
+    getHouseNameShort(): string {
+        return this.houseName.replace('House - ', '')
     }
 
     isCompliant(): boolean {
