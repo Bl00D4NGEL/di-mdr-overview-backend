@@ -9,6 +9,7 @@ import express = require('express');
 import cors = require('cors');
 import bodyParser = require('body-parser');
 import getHouseNames from "../routeModules/getHouseNames";
+import getDivisionMembers from "../routeModules/getDivisionMembers";
 
 export default function getDefaultExpress(): any {
     const app = express();
@@ -28,6 +29,7 @@ function addRoutes(app) {
     app.get('/house/:houseName', getHouse);
     app.get('/mdr', getMdr);
     app.get('/get/divisionNames', getDivisionNames);
+    app.get('/get/divisionMembers/:divisionName', getDivisionMembers);
     app.get('/get/houseNames', getHouseNames);
     app.get('/get/roleNames', getRoleNames);
     app.post('/get/tagList', getTagList);
