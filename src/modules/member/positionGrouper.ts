@@ -1,7 +1,7 @@
 import {IMember} from "./member";
 import {POSITIONS, PRIORITIES} from "./positions";
 import {IMemberCollection} from "./memberCollection";
-import {AWAY, PROBATION} from "./ranks";
+import {AWAY, INITIATE, PROBATION} from "./ranks";
 
 export default function positionGrouper(positions: string[], members: IMember[]): IMemberCollection {
     const collection: IMemberCollection = {};
@@ -14,11 +14,11 @@ export default function positionGrouper(positions: string[], members: IMember[])
 }
 
 function discardInvalidPositions(positions: string[]): string[] {
-    return positions.filter(position => [...POSITIONS, AWAY, PROBATION].includes(position));
+    return positions.filter(position => [...POSITIONS, AWAY, PROBATION, INITIATE].includes(position));
 }
 
 function getMembersWithPosition(members: IMember[], position: string): IMember[] {
-    if ([AWAY, PROBATION].includes(position)) {
+    if ([AWAY, PROBATION, INITIATE].includes(position)) {
         return members.filter(member => member.getRank() === position);
     }
     return members.filter(member => member.getPosition() === position);
