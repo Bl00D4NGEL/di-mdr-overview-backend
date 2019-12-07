@@ -21,7 +21,7 @@ function bindFunctions(division: IDivision): void {
 
 function setData(division: IDivision, divisionData: diDivision): void {
     division.setGame(divisionData.Game.name);
-    division.setName(getDivisionNameFromUrl(divisionData.url));
+    division.setName(divisionData.name);
     division.setIsSuperDivision(divisionData.super || divisionData.Super);
     division.setIsSeedDivision(divisionData.is_seed === 1);
 
@@ -29,12 +29,4 @@ function setData(division: IDivision, divisionData: diDivision): void {
     addObjectWithCallback(divisionData.Teams, division.addTeam, serializeTeam);
     addMembersWithCallback(divisionData.Commander, division.addCommander);
     addMembersWithCallback(divisionData.Vice, division.addVice);
-}
-
-function getDivisionNameFromUrl(url: string): string {
-    const division = url.match(/about\/.*?\/di-(\w+)/);
-    if (division === undefined) {
-        return '';
-    }
-    return division[1];
 }

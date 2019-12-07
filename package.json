@@ -41,12 +41,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Bl00D4NGEL/binance_scraper.git"
+    "url": "git+https://github.com/Bl00D4NGEL/di-mdr-overview-backend"
   },
   "author": "Dominik Peters",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Bl00D4NGEL/binance_scraper/issues"
+    "url": "https://github.com/Bl00D4NGEL/di-mdr-overview-backend/issues"
   },
-  "homepage": "https://github.com/Bl00D4NGEL/binance_scraper#readme"
+  "homepage": "https://github.com/Bl00D4NGEL/di-mdr-overview-backend#readme"
 }

@@ -19,7 +19,7 @@ async function fetchMdrFromWeb(): Promise<any> {
         },
         json: true,
     };
-    const url = 'https://di.community/mdr/?as_data_structure';
+    const url = 'https://app.dmginc.gg/mdr/?as_data_structure';
     const utils = new Utils();
 
     return utils.WriteFile('data/mdr.json', await fetch(url, options).then(res => res.text()));
