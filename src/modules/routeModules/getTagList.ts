@@ -1,12 +1,16 @@
-import {IMdr, loadMdrFromFile} from "../mdr/mdr";
-import {Request, Response} from "express";
-import TagListOutputWeb from "../tagListOutput/tagListOutputWeb";
-import positionGrouper from "../member/positionGrouper";
+import { IMdr, loadMdrFromFile } from '../mdr/mdr';
+import { Request, Response } from 'express';
+import TagListOutputWeb from '../tagListOutput/tagListOutputWeb';
+import positionGrouper from '../member/positionGrouper';
+import Utils from '../utils/utils';
 
 export default function getTagList(req: Request, res: Response): void {
     const body = req.body;
     const requestedDivisions = body.divisions;
-    const roles = req.body.roles;
+    const roles = body.roles;
+
+    const utils = new Utils();
+    utils.LogRequest({logPath: 'logs/getTagList.json', requestedDivisions, roles });
 
     if (!Array.isArray(requestedDivisions)) {
         console.log(requestedDivisions);
@@ -21,10 +25,8 @@ export default function getTagList(req: Request, res: Response): void {
     const mdr: IMdr = loadMdrFromFile();
     const toLoadDivisions = mdr
         .getDivisions()
-        .filter(
-            division => requestedDivisions
-                .map(div => div.toLowerCase())
-                .includes(division.getName().toLowerCase())
+        .filter(division =>
+            requestedDivisions.map(div => div.toLowerCase()).includes(division.getName().toLowerCase()),
         );
     if (toLoadDivisions.length === 0) {
         res.send('Requested divisions do not exist');
