@@ -1,9 +1,9 @@
-import Mdr from "../mdr/mdr";
+import Mdr, {IMdr} from "../mdr/mdr";
 import {HOUSE_NAMES, SPECIAL} from "../house/names";
 import serializeHouse from "./serializeHouse";
 import {diMdr} from "../mdr/diMdr";
 
-export default function serializeMdr(mdrData: diMdr) {
+export default function serializeMdr(mdrData: diMdr): IMdr {
     const mdr = new Mdr();
 
     HOUSE_NAMES.forEach(houseName => {

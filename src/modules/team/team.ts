@@ -9,9 +9,6 @@ export interface ITeam {
     addTeamLeader(teamLeader: IMember): void;
     getTeamLeaders(): IMember[];
 
-    addSecondInCharge(secondInCharge: IMember): void;
-    getSecondInCharges(): IMember[];
-
     addOnAway(awayMember: IMember): void;
     getOnAways(): IMember[];
 
@@ -37,7 +34,6 @@ export interface ITeam {
 export default class Team implements ITeam {
     private rosters: IRoster[] = [];
     private teamLeaders: IMember[] = [];
-    private secondInCharges: IMember[] = [];
 
     private onAways: IMember[] = [];
     private onProbations: IMember[] = [];
@@ -54,14 +50,6 @@ export default class Team implements ITeam {
         return this.rosters;
     }
 
-    addSecondInCharge(secondInCharge: IMember): void {
-        this.secondInCharges.push(secondInCharge);
-    }
-
-    getSecondInCharges(): IMember[] {
-        return this.secondInCharges;
-    }
-
     addTeamLeader(teamLeader: IMember): void {
         this.teamLeaders.push(teamLeader);
     }
@@ -72,7 +60,6 @@ export default class Team implements ITeam {
 
     getMembers(): IMember[] {
         const members = this.teamLeaders
-            .concat(this.secondInCharges)
             .concat(this.onAways)
             .concat(this.onProbations);
         this.getRosters().forEach(roster => roster.getMembers().forEach(member => members.push(member)));

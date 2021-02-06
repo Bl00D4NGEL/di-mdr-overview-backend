@@ -23,6 +23,6 @@ function setData(houseData: diHouse, house: IHouse): void {
     house.setHouseName(houseData.name);
     setNcDataForObject(houseData, house.setNcData);
     addObjectWithCallback(houseData.Divisions, house.addDivision, serializeDivision);
-    addMembersWithCallback(houseData["House General"], house.addHouseGeneral);
-    addMembersWithCallback(houseData["First Commander"], house.addFirstCommander);
+    addMembersWithCallback(houseData["House Leader"], house.addHouseGeneral);
+    addMembersWithCallback(houseData["House Vice"], house.addFirstCommander);
 }

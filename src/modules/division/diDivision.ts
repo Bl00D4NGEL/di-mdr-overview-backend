@@ -26,8 +26,8 @@ export interface diDivision {
     posts: number;
     "Officer-Count": number;
     "Active-In-Last-5-Days-Count": number;
-    Vice: diMember[];
-    Commander: diMember[];
+    "Division Vice"?: diMember[];
+    "Division Leader"?: diMember[];
     "Mobile-Device-Linked-Count": number;
     "Warden-Count": number;
     "Members-Count": number;

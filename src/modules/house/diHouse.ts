@@ -17,8 +17,8 @@ export interface diHouse {
     "Officer-Count": number;
     "Members-Count": number;
     "Veterans-Count": number;
-    "House General": diMember[];
-    "First Commander": diMember[];
+    "House Leader"?: diMember[];
+    "House Vice"?: diMember[];
     "Initiate-Count": number;
     name: string;
     NCSince: number;
