@@ -8,9 +8,9 @@ export interface diRoster {
     "Members-Count": number;
     "Veterans-Count": number;
     "Initiate-Count": number;
-    Members: diMember[];
-    RL: diMember[];
-    Additions: {
+    Members?: diMember[];
+    RL?: diMember[];
+    Additions?: {
         [roleName: string]: diMember[]
     }
     name: string;

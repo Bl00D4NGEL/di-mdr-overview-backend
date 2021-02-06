@@ -39,7 +39,7 @@ export default class House implements IHouse{
     }
 
     getDivisions(): IDivision[] {
-        return this.divisions;
+        return this.divisions.filter(division => division.getName().startsWith('DI-'));
     }
 
     addFirstCommander(firstCommander: IMember): void {

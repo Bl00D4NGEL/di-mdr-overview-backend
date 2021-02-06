@@ -18,7 +18,6 @@ function setData(teamData: diTeam, team) {
     addMembersWithCallback(teamData.OnAway, team.addOnAway);
     addMembersWithCallback(teamData.Probation, team.addOnProbation);
     addMembersWithCallback(teamData.TL, team.addTeamLeader);
-    addMembersWithCallback(teamData['2IC'], team.addSecondInCharge);
     team.setName(teamData.name);
     team.setIsCasualTeam(teamData.isCasual);
 }
@@ -28,6 +27,5 @@ function bindFunctions(team: ITeam): void {
     team.addRoster = team.addRoster.bind(team);
     team.addOnAway = team.addOnAway.bind(team);
     team.addOnProbation = team.addOnProbation.bind(team);
-    team.addSecondInCharge = team.addSecondInCharge.bind(team);
     team.addTeamLeader = team.addTeamLeader.bind(team);
 }

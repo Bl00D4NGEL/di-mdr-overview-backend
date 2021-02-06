@@ -20,13 +20,13 @@ function bindFunctions(division: IDivision): void {
 }
 
 function setData(division: IDivision, divisionData: diDivision): void {
-    division.setGame(divisionData.Game.name);
+    division.setGame(divisionData.Game && divisionData.Game.name || '');
     division.setName(divisionData.name);
     division.setIsSuperDivision(divisionData.super || divisionData.Super);
     division.setIsSeedDivision(divisionData.is_seed === 1);
 
     setNcDataForObject(divisionData, division.setNcData);
     addObjectWithCallback(divisionData.Teams, division.addTeam, serializeTeam);
-    addMembersWithCallback(divisionData.Commander, division.addCommander);
-    addMembersWithCallback(divisionData.Vice, division.addVice);
+    addMembersWithCallback(divisionData["Division Leader"], division.addCommander);
+    addMembersWithCallback(divisionData["Division Vice"], division.addVice);
 }

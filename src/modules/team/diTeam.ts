@@ -7,13 +7,12 @@ export interface diTeam {
     Counter: number;
     "Officer-Count": number;
     "Active-In-Last-5-Days-Count": number;
-    Rosters: {
+    Rosters?: {
         [rosterName: string]: diRoster
     }
-    Probation: diMember[];
-    OnAway: diMember[];
-    TL: diMember[];
-    "2IC": diMember[];
+    Probation?: diMember[];
+    OnAway?: diMember[];
+    TL?: diMember[];
     "Mobile-Device-Linked-Count": number;
     "Warden-Count": number;
     "Members-Count": number;
