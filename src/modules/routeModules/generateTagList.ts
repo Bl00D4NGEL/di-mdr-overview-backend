@@ -1,6 +1,6 @@
 import {Request, Response} from 'express';
 import Utils from '../utils/utils';
-import {GetSerializedMdr} from "../utils/GetSerializedMdr";
+import {GetSerializedMdrCsv} from "../utils/GetSerializedMdr";
 
 interface RequestBody {
     divisions: string[],
@@ -16,7 +16,7 @@ export default function GenerateTagList(req: Request, res: Response): void {
     }: RequestBody = req.body;
 
     const membersToTag = [];
-    GetSerializedMdr()
+    GetSerializedMdrCsv()
         .getDivisions()
         .filter(division => divisions.includes(division.getName()))
         .forEach(

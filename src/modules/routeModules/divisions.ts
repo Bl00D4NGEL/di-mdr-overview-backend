@@ -1,10 +1,12 @@
 import {Request, Response} from "express";
-import {GetSerializedMdr} from "../utils/GetSerializedMdr";
+import {GetSerializedMdrCsv} from "../utils/GetSerializedMdr";
 
 export default function Divisions(req: Request, res: Response): void {
-    const divisionInfo: string[] = [];
-    GetSerializedMdr().getDivisions().forEach(division => {
-        divisionInfo.push(division.getName());
+    const divisionNames: string[] = [];
+    GetSerializedMdrCsv().getDivisions().forEach(division => {
+        if (!divisionNames.includes(division.getName())) {
+            divisionNames.push(division.getName());
+        }
     });
-    res.send(divisionInfo);
+    res.send(divisionNames);
 }
