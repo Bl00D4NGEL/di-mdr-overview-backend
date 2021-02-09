@@ -20,14 +20,16 @@ export async function fetchMdrFromWeb(): Promise<any> {
         },
         json: true,
     };
-    const url = 'https://oldmdr.dmginc.gg/?as_data_structure';
+    const currentDate = new Date();
+    const month = currentDate.getMonth() < 9 ? '0' + (currentDate.getMonth() + 1) : currentDate.getMonth() + 1;
+    const day = currentDate.getDate() < 10 ? '0' + currentDate.getDate() : currentDate.getDate()
+    const url = 'https://api.dmg-inc.com/reports/download/' + currentDate.getFullYear() + '/' + month + '/' + day;
     const utils = new Utils();
 
-    fs.copyFileSync('data/mdr.json', 'data/mdr_' + Date.now().toString() + '.json');
+    fs.copyFileSync('data/report.csv', 'data/report_' + Date.now().toString() + '.csv');
     return utils.WriteFile(
-        'data/mdr.json',
+        'data/report.csv',
         await fetch(url, options)
-            .then(res => res.json())
-            .then(x => JSON.stringify(x))
+            .then(res => res.text())
     );
 }

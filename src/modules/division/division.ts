@@ -6,11 +6,11 @@ export interface IDivision {
     addTeam(team: ITeam): void;
     getTeams(): ITeam[];
 
-    addCommander(commander: IMember): void;
-    getCommanders(): IMember[];
+    addDivisionLeader(commander: IMember): void;
+    getDivisionLeaders(): IMember[];
 
-    addVice(vice: IMember): void;
-    getVices(): IMember[];
+    addDivisionVice(vice: IMember): void;
+    getDivisionVices(): IMember[];
 
     setGame(name: string): void;
     getGame(): string;
@@ -36,8 +36,8 @@ export interface IDivision {
 
 export default class Division implements IDivision {
     private teams: ITeam[] = [];
-    private commanders: IMember[] = [];
-    private vices: IMember[] = [];
+    private divisionLeaders: IMember[] = [];
+    private divisionVices: IMember[] = [];
 
     private ncData: INcData;
     private game: string;
@@ -46,12 +46,12 @@ export default class Division implements IDivision {
     private isSeed: boolean = false;
     private isSuper: boolean = false;
 
-    addCommander(commander: IMember): void {
-        this.commanders.push(commander);
+    addDivisionLeader(commander: IMember): void {
+        this.divisionLeaders.push(commander);
     }
 
-    getCommanders(): IMember[] {
-        return this.commanders;
+    getDivisionLeaders(): IMember[] {
+        return this.divisionLeaders;
     }
 
     addTeam(team: ITeam): void {
@@ -62,16 +62,16 @@ export default class Division implements IDivision {
         return this.teams;
     }
 
-    addVice(vice: IMember): void {
-        this.vices.push(vice);
+    addDivisionVice(vice: IMember): void {
+        this.divisionVices.push(vice);
     }
 
-    getVices(): IMember[] {
-        return this.vices;
+    getDivisionVices(): IMember[] {
+        return this.divisionVices;
     }
 
     getMembers(): IMember[] {
-        const members = this.commanders.concat(this.vices);
+        const members = this.divisionLeaders.concat(this.divisionVices);
         this.getTeams().forEach(team => team.getMembers().forEach(member => members.push(member)));
         return members;
     }

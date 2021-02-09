@@ -6,11 +6,11 @@ export interface IHouse {
     addDivision(division: IDivision): void;
     getDivisions(): IDivision[];
 
-    addHouseGeneral(houseGeneral: IMember): void;
-    getHouseGenerals(): IMember[];
+    addHouseLeader(houseGeneral: IMember): void;
+    getHouseLeaders(): IMember[];
 
-    addFirstCommander(firstCommander: IMember): void;
-    getFirstCommanders(): IMember[];
+    addHouseVice(firstCommander: IMember): void;
+    getHouseVices(): IMember[];
 
     getMembers(): IMember[];
 
@@ -28,8 +28,8 @@ export interface IHouse {
 
 export default class House implements IHouse{
     private divisions: IDivision[] = [];
-    private houseGenerals: IMember[] = [];
-    private firstCommanders: IMember[] = [];
+    private houseLeaders: IMember[] = [];
+    private houseVices: IMember[] = [];
 
     private houseName: string;
     private ncData: INcData;
@@ -42,24 +42,24 @@ export default class House implements IHouse{
         return this.divisions.filter(division => division.getName().startsWith('DI-'));
     }
 
-    addFirstCommander(firstCommander: IMember): void {
-        this.firstCommanders.push(firstCommander);
+    addHouseVice(firstCommander: IMember): void {
+        this.houseVices.push(firstCommander);
     }
 
-    getFirstCommanders(): IMember[] {
-        return this.firstCommanders;
+    getHouseVices(): IMember[] {
+        return this.houseVices;
     }
 
-    addHouseGeneral(houseGeneral: IMember): void {
-        this.houseGenerals.push(houseGeneral);
+    addHouseLeader(houseGeneral: IMember): void {
+        this.houseLeaders.push(houseGeneral);
     }
 
-    getHouseGenerals(): IMember[] {
-        return this.houseGenerals;
+    getHouseLeaders(): IMember[] {
+        return this.houseLeaders;
     }
 
     getMembers(): IMember[] {
-        const members = this.houseGenerals.concat(this.firstCommanders);
+        const members = this.houseLeaders.concat(this.houseVices);
         this.getDivisions().forEach(division => division.getMembers().forEach(member => members.push(member)));
         return members;
     }

@@ -1,9 +1,6 @@
 import {IMember} from "../member/member";
 import {IHouse} from "../house/house";
 import {IDivision} from "../division/division";
-import Utils from "../utils/utils";
-import serializeMdr from "../serializer/serializeMdr";
-
 
 export interface IMdr {
     addHouse(a: IHouse): void;
@@ -48,16 +45,5 @@ export default class Mdr implements IMdr {
         const members = [];
         this.getHouses().forEach(house => house.getMembers().forEach(member => members.push(member)));
         return members;
-    }
-}
-
-export function loadMdrFromFile(): IMdr {
-    const fileName = 'data/mdr.json';
-    const utils = new Utils();
-    try {
-        return serializeMdr(JSON.parse(utils.ReadFileSync(fileName)));
-    }
-    catch (e) {
-        console.error(e);
     }
 }
