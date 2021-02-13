@@ -1,4 +1,13 @@
 import * as fs from 'fs';
+
+interface LoggableData {
+    divisions: string[],
+    positions: string[],
+    ranks: string[],
+    memberCount: number,
+    date: string
+}
+
 class Utils {
     async ReadFile(path: string, opts = 'utf8'): Promise<any> {
         return new Promise((resolve, reject) => {
@@ -22,17 +31,29 @@ class Utils {
         });
     }
 
-    async LogRequest({ logPath, ...loggableData }): Promise<any> {
+    async LogRequest({logPath, ...loggableData}): Promise<any> {
         return new Promise((resolve, reject) => {
             fs.readFile(logPath, (err, data) => {
-                const logData = { ...loggableData, date: new Date().toISOString() };
+                const logData: LoggableData = {
+                    divisions: [],
+                    ranks: [],
+                    positions: [],
+                    memberCount: 0,
+                    date: new Date().toISOString(),
+                    ...loggableData
+                };
                 if (!err) {
-                    const currentData: Array<any> = JSON.parse(data.toString());
-                    currentData.push(logData);
-                    fs.writeFile(logPath, JSON.stringify(currentData), err => {
-                        if (err) reject(err);
-                        resolve();
-                    });
+                    try {
+                        const currentData: Array<any> = JSON.parse(data.toString());
+                        currentData.push(logData);
+                        fs.writeFile(logPath, JSON.stringify(currentData), err => {
+                            if (err) reject(err);
+                            resolve();
+                        });
+                    } catch (exception) {
+                        console.log('failed json parse: ' + exception.toString());
+                        console.log('tried to parse: ' + data.toString());
+                    }
                 } else {
                     fs.writeFile(logPath, JSON.stringify([logData]), err => {
                         if (err) reject(err);
@@ -43,4 +64,5 @@ class Utils {
         });
     }
 }
+
 export default Utils;

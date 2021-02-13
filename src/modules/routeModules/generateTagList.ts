@@ -27,6 +27,12 @@ export default function GenerateTagList(req: Request, res: Response): void {
         );
 
     const utils = new Utils();
-    utils.LogRequest({logPath: 'logs/getTagList.json', data: {divisions, positions, ranks, memberCount: membersToTag.length}});
+    utils.LogRequest({
+        logPath: 'logs/getTagList.json',
+        divisions,
+        positions,
+        ranks,
+        memberCount: membersToTag.length
+    }).catch(error => console.error('Something went wrong when logging the request: ', error));
     res.send(membersToTag);
 }

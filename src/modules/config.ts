@@ -29,7 +29,7 @@ const devConfig: IConfig = {
 
 let prodConfig: IConfig = {
     environment: "prod",
-    reloadData: false,
+    reloadData: true,
     renewInterval: 24 * 60 * 60 * 1000, // 1 day
     ...defaultConfig
 };
